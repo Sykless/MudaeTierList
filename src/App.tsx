@@ -1,7 +1,6 @@
 import Tier from "./Tier"
 import Character from "./Character"
 import type { CharacterProperties } from "./Character"
-import type { TierProperties } from "./Tier"
 import type { DragEndEvent } from "@dnd-kit/core"
 import { DndContext } from "@dnd-kit/core"
 import { useState } from "react"
