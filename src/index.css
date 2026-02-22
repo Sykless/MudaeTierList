@@ -1,63 +1,71 @@
 body {
-  margin: 0;
-  background: #1e1e1e;
-  font-family: Arial, sans-serif;
+    margin: 0;
+    background: #1e1e1e;
+    font-family: Arial, sans-serif;
 }
 
 .appContainer {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .tierlist {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 1200px;
-  margin: 40px auto;
-  gap: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 40px auto;
+    gap: 4px;
 }
 
 .tier {
-  display: flex;
-  height: 80px;
+    display: flex;
+    align-items: stretch;
 }
 
 .tierName {
-  width: 20%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 24px;
-  color: white;
+    width: 72px;              /* same as image height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    flex-shrink: 0;
 }
 
 .tierContent {
-  width: 80%;
-  background: black;
+    display: grid;
+    grid-template-columns: repeat(15, 72px);
+    grid-auto-rows: 112px;
+    min-height: 112px;
+    width: calc(15 * 72px);
+    background: black;
+}
+
+.tierName {
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
 }
 
 .characterPool {
-  background: #111;
-  padding: 16px;
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
+    background: #111;
+    display: flex;
+    overflow-x: auto;
 }
 
 .character {
-  width: 90px;
-  aspect-ratio: 9 / 14;
-  object-fit: cover;
-  background: #222;
-  border-radius: 6px;
-  flex-shrink: 0;
+    width: 72px;
+    height: 112px;
 }
 
 .character img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }

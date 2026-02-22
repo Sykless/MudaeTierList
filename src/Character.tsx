@@ -30,6 +30,7 @@ function Character({ name, image }: CharacterProperties) {
             className = "character"
             src = {proxifyImageUrl(image)}
             alt = {name}
+            title = {name}
         />
     )
 }
