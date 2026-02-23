@@ -23,17 +23,6 @@ body {
     align-items: stretch;
 }
 
-.tierName {
-    width: 72px;              /* same as image height */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-    color: white;
-    flex-shrink: 0;
-}
-
 .tierContent {
     display: grid;
     grid-template-columns: repeat(15, 72px);
@@ -49,13 +38,60 @@ body {
     align-items: center;
     justify-content: center;
     font-weight: bold;
+    font-size: 18px;
     color: white;
 }
 
 .characterPool {
     background: #111;
-    display: flex;
     overflow-x: auto;
+    bottom: 0;
+    margin: 0 auto;
+    max-width: 1440px;
+    overflow: hidden;
+
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+
+    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.poolHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    width: 100%;
+
+    padding: 8px 0px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.poolContent {
+    overflow-y: auto;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.resizeHandle {
+    height: 8px;
+    cursor: ns-resize;
+    background: transparent;
+    position: relative;
+}
+
+.resizeHandle::after {
+    content: "";
+    width: 40px;
+    height: 4px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 2px;
 }
 
 .character {

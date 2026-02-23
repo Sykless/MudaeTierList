@@ -1,8 +1,8 @@
 import Character, { type CharacterProperties } from "./Character"
 
 import { useState } from "react"
-import { DndContext, DragOverlay, useDroppable } from "@dnd-kit/core"
-import type { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core"
+import { DndContext, DragOverlay, useDroppable, rectIntersection } from "@dnd-kit/core"
+import type { CollisionDetection, DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core"
 
 const TIERS_LABELS = ["S","A","B","C","D","E","F","G","H","I"]
 const COLORS = [
@@ -84,6 +84,30 @@ function App()
     // Keep track of the picked character and hovererd tier for preview
     const [activeCharacter, setActiveCharacter] = useState<CharacterProperties | null>(null)
     const [hoveredTier, setHoveredTier] = useState<number | null>(null)
+    const [autoScrollEnabled, setAutoScrollEnabled] = useState(false)
+    const [poolHeight, setPoolHeight] = useState(200)
+
+    // Resize pool when dragging it upwards
+    function resizePool(e: any) {
+        e.preventDefault();
+        const startY = e.clientY
+        const startHeight = poolHeight
+
+        function onMove(e: any) {
+            const delta = startY - e.clientY
+            setPoolHeight(
+                Math.max(120, Math.min(500, startHeight + delta))
+            )
+        }
+
+        function onUp() {
+            window.removeEventListener("mousemove", onMove)
+            window.removeEventListener("mouseup", onUp)
+        }
+
+        window.addEventListener("mousemove", onMove)
+        window.addEventListener("mouseup", onUp)
+    }
 
     // Generate character preview when an image is dragged
     function handleDragStart(event: DragStartEvent)
@@ -101,6 +125,7 @@ function App()
     // Generate character placeholder preview in the hovered tier
     function handleDragOver(event: DragOverEvent) {
         setHoveredTier(event.over?.id as number ?? null)
+        setAutoScrollEnabled(false)
     }
 
     // Erase character preview
@@ -241,12 +266,20 @@ function App()
         })
 
         return (
-            <div ref = {setNodeRef} className = "characterPool">
-                {characters.map((character) => (
-                    <Character key = {character.name}
-                        name = {character.name} 
-                        image = {character.image} />
-                ))}
+            <div ref = {setNodeRef} className = "characterPool" style = {{position: "sticky", height: poolHeight, zIndex: 999, pointerEvents: "auto"}}>
+                <div className = "resizeHandle" onMouseDown = {resizePool} />
+                <div className="poolHeader">
+                    <input placeholder="Search..." />
+                    <span>34 remaining</span>
+                </div>
+
+                <div className="poolContent" style = {{pointerEvents: "auto"}}>
+                    {characters.map((character) => (
+                        <Character key = {character.name}
+                            name = {character.name} 
+                            image = {character.image} />
+                    ))}
+                </div>
             </div>
         )
     }
@@ -277,16 +310,17 @@ function App()
             onDragStart = {handleDragStart}
             onDragEnd = {handleDragEnd}
             onDragOver = {handleDragOver}
-            onDragCancel = {handleDragCancel}>
+            onDragCancel = {handleDragCancel}
+            autoScroll = {autoScrollEnabled}
+            collisionDetection = {poolCollisionDetection}>
 
-            <DragOverlay>
-                {activeCharacter
-                && <img src = {activeCharacter.image}
-                        style = {{
-                            width: 72,
-                            height: 112,
-                            opacity: 0.8
-                        }}/>}
+            <DragOverlay style = {{zIndex: 9999}}>
+                {activeCharacter && <img src = {activeCharacter.image}
+                    style = {{
+                        width: 72,
+                        height: 112,
+                        opacity: 0.8
+                    }}/>}
             </DragOverlay>
 
             <div className = "tierlist">
@@ -303,6 +337,29 @@ function App()
         </DndContext>
     )
 }
+
+// Always drop characters in pool if we're in pool coordinates
+const poolCollisionDetection: CollisionDetection = (args) => {
+    const { droppableContainers, pointerCoordinates } = args;
+
+    if (pointerCoordinates) {
+        const poolDroppable = droppableContainers.find(c => c.id == -1);
+
+        // Retrieve pool coordinates to check if we're on top of it
+        if (poolDroppable?.rect.current) {
+            const rect = poolDroppable.rect.current;
+
+            // Check if mouse pointer is between pool coordinates
+            if (pointerCoordinates.x >= rect.left && pointerCoordinates.x <= rect.right
+                && pointerCoordinates.y >= rect.top && pointerCoordinates.y <= rect.bottom) {
+                return [poolDroppable];
+            }
+        }
+    }
+
+    // Default behavior : rectIntersection
+    return rectIntersection(args);
+};
 
 function proxifyImageUrl(originalUrl: string) {
     const cleanUrl = originalUrl.replace(/^https?:\/\//, "")
