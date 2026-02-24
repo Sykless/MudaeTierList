@@ -10,6 +10,26 @@ body {
     min-height: 100vh;
 }
 
+.importSection {
+    width: 100%;
+    max-width: 1440px;
+    margin: 20px auto;
+    display: flex;
+    gap: 12px;
+}
+
+.importSection textarea {
+    flex: 1;
+    height: 100px;
+    resize: vertical;
+    padding: 8px;
+}
+
+.importSection button {
+    padding: 0 16px;
+    cursor: pointer;
+}
+
 .tierlist {
     display: flex;
     flex-direction: column;
@@ -30,6 +50,7 @@ body {
     min-height: 112px;
     width: calc(15 * 72px);
     background: black;
+    gap: 0;
 }
 
 .tierName {
@@ -43,35 +64,39 @@ body {
 }
 
 .characterPool {
-    background: #111;
-    overflow-x: auto;
+    max-width: 1440px;
+    background: #322e47;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     bottom: 0;
     margin: 0 auto;
-    max-width: 1440px;
-    overflow: hidden;
-
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
-
     box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .poolHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 40px;
+    height: 8px;
     width: 100%;
-
-    padding: 8px 0px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .poolContent {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 72px);
+    grid-auto-rows: 112px;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
+}
+
+.poolContent::-webkit-scrollbar {
+    display: none;
 }
 
 .resizeHandle {
@@ -97,4 +122,5 @@ body {
 .character {
     width: 72px;
     height: 112px;
+    display: block;
 }
