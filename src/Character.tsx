@@ -1,5 +1,6 @@
 import { useDraggable } from "@dnd-kit/core"
 import { CSS } from "@dnd-kit/utilities"
+import { CHARACTER_HEIGHT, CHARACTER_WIDTH } from "./Utils"
 
 export type CharacterProperties = {
     name: string
@@ -9,7 +10,8 @@ export type CharacterProperties = {
 function Character({ name, image }: CharacterProperties) {
 
     const {attributes, isDragging, listeners, setNodeRef, transform} = useDraggable({
-        id: name
+        id: name,
+        data: {name, image} as CharacterProperties
     })
 
     const style = isDragging
@@ -26,6 +28,8 @@ function Character({ name, image }: CharacterProperties) {
             src = {image}
             alt = {name}
             title = {name}
+            width = {CHARACTER_WIDTH}
+            height = {CHARACTER_HEIGHT}
         />
     )
 }
