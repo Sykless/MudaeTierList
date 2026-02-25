@@ -71,7 +71,7 @@ function Pool({ characters, poolRef }: PoolProperties)
         function onMove(e: any) {
             const delta = startY - e.clientY
             setPoolHeight(
-                Math.max(120, Math.min(500, startHeight + delta))
+                Math.max(32, Math.min(32 + 5 * CHARACTER_HEIGHT, startHeight + delta))
             )
         }
 
@@ -96,7 +96,11 @@ function Pool({ characters, poolRef }: PoolProperties)
             }}>
 
             {/* Header : TODO display header differently if not sticky */}
-            {isSticky && <div className = "resizeHandle" onMouseDown = {resizePool} />} 
+            <div className = "resizeHandle" onMouseDown = {resizePool} style = {{
+                cursor: isSticky ? "ns-resize" : "default",
+                ["--handle-color" as any]: `rgba(0,0,0,${isSticky ? 0.45 : 0})`
+            }} />
+
             <div className = "poolHeader">
                 {/* <input placeholder="Search..." /> <span>34 remaining</span> */}
             </div>

@@ -92,22 +92,21 @@ body {
 
 .resizeHandle {
     height: 8px;
-    cursor: ns-resize;
+    border: 0;
     background: transparent;
     position: relative;
 }
 
 .resizeHandle::after {
     content: "";
-    width: 40px;
-    height: 4px;
-    background: rgba(0,0,0,0.3);
+    width: 60px;
+    height: 6px;
+    background: var(--handle-color, rgba(0,0,0,0.45));
     border-radius: 4px;
-
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    top: 2px;
+    top: 3px;
 }
 
 .character {
