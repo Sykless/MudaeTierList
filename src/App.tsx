@@ -95,26 +95,23 @@ function App()
             }
 
             // Character moved from tier to pool/another tier
-            if (originTierId != POOL_ID) {
-
+            if (originTierId != POOL_ID && originTierId != targetTierId)
+            {
                 // Update source and target tiers
                 return prev.map((tier) =>
                 {
-                    if (originTierId != targetTierId)
-                    {
-                        // Remove character from source tier
-                        if (originTierId === tier.id) {
-                            return {...tier,
-                                characters: tier.characters.filter(
-                                    (character) => character.name !== characterName)
-                            }
+                    // Remove character from source tier
+                    if (originTierId === tier.id) {
+                        return {...tier,
+                            characters: tier.characters.filter(
+                                (character) => character.name !== characterName)
                         }
+                    }
 
-                        // Add character to target tier
-                        if (targetTierId === tier.id) {
-                            return {...tier,
-                                characters: [...tier.characters, targetCharacter]
-                            }
+                    // Add character to target tier
+                    if (targetTierId === tier.id) {
+                        return {...tier,
+                            characters: [...tier.characters, targetCharacter]
                         }
                     }
 
