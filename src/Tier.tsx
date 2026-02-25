@@ -38,7 +38,7 @@ function Tier({ id, label, color, characters }: TierProperties)
                 ))}
 
                 {/* Display preview on hovered tier */}
-                {isOver && draggedCharacter &&
+                {isOver && draggedCharacter && draggedCharacter.tierId != id &&
                     <TierCharacterPreview characterImage = {draggedCharacter.image} />}
             </div> 
         </div>
