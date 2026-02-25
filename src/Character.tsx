@@ -5,13 +5,14 @@ import { CHARACTER_HEIGHT, CHARACTER_WIDTH } from "./Utils"
 export type CharacterProperties = {
     name: string
     image: string
+    tierId: number
 }
 
-function Character({ name, image }: CharacterProperties) {
+function Character({ name, image, tierId }: CharacterProperties) {
 
     const {attributes, isDragging, listeners, setNodeRef, transform} = useDraggable({
         id: name,
-        data: {name, image} as CharacterProperties
+        data: {name, image, tierId} as CharacterProperties
     })
 
     const style = isDragging

@@ -113,7 +113,8 @@ function Pool({ characters, poolRef }: PoolProperties)
                 {characters.map((character) => (
                     <Character key = {character.name}
                         name = {character.name} 
-                        image = {character.image} />
+                        image = {character.image} 
+                        tierId = {character.tierId}/>
                 ))}
             </div>
         </div>

@@ -33,7 +33,8 @@ function Tier({ id, label, color, characters }: TierProperties)
                 {characters.map((character) => (
                     <Character key = {character.name}
                         name = {character.name}
-                        image = {character.image} />
+                        image = {character.image}
+                        tierId = {character.tierId} />
                 ))}
 
                 {/* Display preview on hovered tier */}

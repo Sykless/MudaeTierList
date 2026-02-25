@@ -53,33 +53,30 @@ function App()
         const { active, over } = event
         if (!over) return
 
-        // Retrieve dropped character and tier id
-        const characterName = active.id as string
+        // Retrieve dragged character and tier id
+        const draggedCharacter = active.data.current as CharacterProperties;
+        const characterName = draggedCharacter.name
+        const originTierId = draggedCharacter.tierId
         const targetTierId = over.id as number
 
-        // Check if the character comes from the pool
-        const poolCharacter = pool.find((character) => character.name === characterName)
-        
-        // Check if the character comes from a tier
-        const tierCharacter = tiers
-            .flatMap(tier => tier.characters)
-            .find((character) => character.name === characterName);
+        // Create a copy character for target tier
+        const targetCharacter = {
+            ...draggedCharacter,
+            tierId: targetTierId
+        }
 
-        // Make sure character exists
-        if (!poolCharacter && !tierCharacter) return
-        
         updatePool((prev) => 
         {
             // Character moved from pool to tier
-            if (poolCharacter && targetTierId != POOL_ID) {
+            if (originTierId == POOL_ID && targetTierId != POOL_ID) {
                 return prev.filter((character) => character.name !== characterName)
             }
 
             // Character moved from tier to pool
-            if (tierCharacter && targetTierId == POOL_ID) {
+            if (originTierId != POOL_ID && targetTierId == POOL_ID) {
                 return prev.some((character) => character.name === characterName)
                     ? prev
-                    : [...prev, tierCharacter];
+                    : [...prev, targetCharacter];
             }
 
             // Default : return original state
@@ -89,33 +86,24 @@ function App()
         updateTiers((prev) =>
         {
             // Character moved from pool to tier
-            if (poolCharacter && targetTierId != POOL_ID) {
+            if (originTierId == POOL_ID && targetTierId != POOL_ID) {
                 return prev.map((tier) =>
                     tier.id === targetTierId
-                        ? { ...tier, characters: [...tier.characters, poolCharacter] }
+                        ? { ...tier, characters: [...tier.characters, targetCharacter] }
                         : tier
                 )
             }
 
             // Character moved from tier to pool/another tier
-            if (tierCharacter) {
-
-                // Find source tier
-                const sourceTier = prev.find((tier) => tier.characters.some(
-                    character => character.name === characterName
-                ))
-
-                // Can't find source tier : return original state
-                if (!sourceTier)
-                    return prev;
+            if (originTierId != POOL_ID) {
 
                 // Update source and target tiers
                 return prev.map((tier) =>
                 {
-                    if (sourceTier.id != targetTierId)
+                    if (originTierId != targetTierId)
                     {
                         // Remove character from source tier
-                        if (tier.id === sourceTier.id) {
+                        if (originTierId === tier.id) {
                             return {...tier,
                                 characters: tier.characters.filter(
                                     (character) => character.name !== characterName)
@@ -123,9 +111,9 @@ function App()
                         }
 
                         // Add character to target tier
-                        if (tier.id === targetTierId) {
+                        if (targetTierId === tier.id) {
                             return {...tier,
-                                characters: [...tier.characters, tierCharacter]
+                                characters: [...tier.characters, targetCharacter]
                             }
                         }
                     }
