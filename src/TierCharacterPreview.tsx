@@ -1,3 +1,5 @@
+import { CHARACTER_HEIGHT, CHARACTER_WIDTH } from "./Utils"
+
 type TierCharacterPreviewProperties = {
     characterImage: string
 }
@@ -9,8 +11,8 @@ function TierCharacterPreview({characterImage}: TierCharacterPreviewProperties)
         <img
             src = {characterImage}
             style = {{
-                width: 72,
-                height: 112,
+                width: CHARACTER_WIDTH,
+                height: CHARACTER_HEIGHT,
                 opacity: 0.5
             }}
         />

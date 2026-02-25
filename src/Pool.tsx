@@ -2,6 +2,7 @@ import Character from "./Character"
 import type { CharacterProperties } from "./Character"
 import { useDroppable } from "@dnd-kit/core"
 import { useEffect, useRef, useState, type RefObject } from "react"
+import { CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL_ID } from "./Utils"
 
 type PoolProperties = {
     characters: CharacterProperties[]
@@ -13,7 +14,7 @@ function Pool({ characters, poolRef }: PoolProperties)
 {
     // Make Pool content droppable 
     const {setNodeRef} = useDroppable({
-        id: -1
+        id: POOL_ID
     })
 
     // Pool adjustable parameters
@@ -34,12 +35,19 @@ function Pool({ characters, poolRef }: PoolProperties)
             // Default : keep sticky value
             let newSticky = isSticky
 
-            // Disable sticky if previously sticky and reached the bottom of the page
-            if (isSticky && viewportBottom >= documentHeight - 1) {
-                newSticky = false
+            // Only disable sticky if pool has more than one line
+            if (characters.length > CHARACTERS_PER_LINE_POOL)
+            {
+                // Disable sticky if previously sticky and reached the bottom of the page
+                if (isSticky && viewportBottom >= documentHeight - 1) {
+                    newSticky = false
+                }
+                // Enable sticky if previously not sticky and scrolled up the tierlist
+                else if (scrollingUp && viewportBottom < documentHeight - poolTotalHeight + poolHeight) {
+                    newSticky = true
+                }
             }
-            // Enable sticky if previously not sticky and scrolled up the tierlist
-            else if (scrollingUp && viewportBottom < documentHeight - poolTotalHeight + poolHeight) {
+            else {
                 newSticky = true
             }
 
@@ -50,7 +58,7 @@ function Pool({ characters, poolRef }: PoolProperties)
 
         window.addEventListener("scroll", handleScroll)
         return () => window.removeEventListener("scroll", handleScroll)
-    }, [isSticky, poolRef])
+    }, [isSticky, poolRef, characters])
 
     // Resize pool when dragging it upwards or downwards
     function resizePool(e: any) {
@@ -79,19 +87,25 @@ function Pool({ characters, poolRef }: PoolProperties)
     return (
         <div ref = {poolRef} className = "characterPool"
             style = {{zIndex: 999,
+                maxWidth: CHARACTERS_PER_LINE_POOL * CHARACTER_WIDTH,
+                minHeight: isSticky ? "" : poolHeight,
                 height: isSticky ? poolHeight : "", 
                 position: isSticky ? "sticky" : "relative",
-                bottom: isSticky ? 0 : "auto"}}>
+                bottom: isSticky ? 0 : "auto",
+                marginBottom: isSticky ? "" : 40,
+            }}>
 
             {/* Header : TODO display header differently if not sticky */}
             {isSticky && <div className = "resizeHandle" onMouseDown = {resizePool} />} 
             <div className = "poolHeader">
-                <input placeholder="Search..." />
-                <span>34 remaining</span>
+                {/* <input placeholder="Search..." /> <span>34 remaining</span> */}
             </div>
 
             {/* Actual droppable character pool */}
-            <div ref = {setNodeRef} className = "poolContent">
+            <div ref = {setNodeRef} className = "poolContent" style = {{
+                gridTemplateColumns: `repeat(auto-fill, ${CHARACTER_WIDTH}px)`,
+                gridAutoRows: CHARACTER_HEIGHT
+            }}>
                 {characters.map((character) => (
                     <Character key = {character.name}
                         name = {character.name} 

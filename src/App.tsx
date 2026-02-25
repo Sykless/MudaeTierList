@@ -4,7 +4,7 @@ import Pool from "./Pool"
 import Import from "./Import"
 import Tierlist from "./Tierlist"
 import DragCharacterPreview from "./DragCharacterPreview"
-import { isInRect } from "./Utils"
+import { isInRect, POOL_ID } from "./Utils"
 
 import { useRef, useState } from "react"
 import { DndContext, rectIntersection } from "@dnd-kit/core"
@@ -71,12 +71,12 @@ function App()
         updatePool((prev) => 
         {
             // Character moved from pool to tier
-            if (poolCharacter && targetTierId >= 0) {
+            if (poolCharacter && targetTierId != POOL_ID) {
                 return prev.filter((character) => character.name !== characterName)
             }
 
             // Character moved from tier to pool
-            if (tierCharacter && targetTierId == -1) {
+            if (tierCharacter && targetTierId == POOL_ID) {
                 return prev.some((character) => character.name === characterName)
                     ? prev
                     : [...prev, tierCharacter];
@@ -89,7 +89,7 @@ function App()
         updateTiers((prev) =>
         {
             // Character moved from pool to tier
-            if (poolCharacter && targetTierId >= 0) {
+            if (poolCharacter && targetTierId != POOL_ID) {
                 return prev.map((tier) =>
                     tier.id === targetTierId
                         ? { ...tier, characters: [...tier.characters, poolCharacter] }
@@ -150,7 +150,7 @@ function App()
 
                 // Always drop characters in pool if we're in pool coordinates
                 if (isInRect(pointerCoordinates, poolRef?.current?.getBoundingClientRect())) {
-                    return [{id: -1, data: { droppableContainer: { id: -1 }}}]
+                    return [{id: POOL_ID, data: { droppableContainer: { id: POOL_ID }}}]
                 }
                 // Default behavior : rectIntersection
                 else {

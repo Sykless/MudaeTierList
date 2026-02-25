@@ -2,6 +2,7 @@ import { useDndContext, useDroppable } from "@dnd-kit/core"
 import type { CharacterProperties } from "./Character"
 import Character from "./Character"
 import TierCharacterPreview from "./TierCharacterPreview"
+import { CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER } from "./Utils"
 
 export type TierProperties = {
     id: number
@@ -25,7 +26,10 @@ function Tier({ id, label, color, characters }: TierProperties)
             </div>
 
             {/* Display all characters in the tier */}
-            <div ref = {setNodeRef} className = "tierContent">
+            <div ref = {setNodeRef} className = "tierContent" style = {{
+                gridTemplateColumns: `repeat(${CHARACTERS_PER_LINE_TIER}, ${CHARACTER_WIDTH}px)`,
+                minHeight: CHARACTER_HEIGHT,
+            }}>
                 {characters.map((character) => (
                     <Character key = {character.name}
                         name = {character.name}

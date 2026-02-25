@@ -1,4 +1,5 @@
 import { DragOverlay, useDndContext } from "@dnd-kit/core"
+import { CHARACTER_HEIGHT, CHARACTER_WIDTH } from "./Utils";
 
 // Preview dragged character
 function DragCharacterPreview()
@@ -10,8 +11,8 @@ function DragCharacterPreview()
         <DragOverlay style = {{zIndex: 9999}}>
             <img src = {draggedCharacter.image}
                 style = {{
-                    width: 72,
-                    height: 112,
+                    width: CHARACTER_WIDTH,
+                    height: CHARACTER_HEIGHT,
                     opacity: 0.8
                 }}/>
         </DragOverlay>
