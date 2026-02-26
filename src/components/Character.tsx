@@ -1,6 +1,6 @@
-import { useDraggable } from "@dnd-kit/core"
+import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { CHARACTER_HEIGHT, CHARACTER_WIDTH } from "./Utils"
+import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../Utils"
 
 export type CharacterProperties = {
     name: string
@@ -10,17 +10,20 @@ export type CharacterProperties = {
 
 function Character({ name, image, tierId }: CharacterProperties) {
 
-    const {attributes, isDragging, listeners, setNodeRef, transform} = useDraggable({
+    const {attributes, isDragging, listeners, setNodeRef, transform, transition} = useSortable({
         id: name,
-        data: {name, image, tierId} as CharacterProperties
+        data:{
+            type: CHARACTER,
+            character: {name, image, tierId} as CharacterProperties
+        }
     })
 
     const style = isDragging
         ? {opacity: 0}
-        : {transform: CSS.Translate.toString(transform)} 
+        : {transform: CSS.Translate.toString(transform), transition} 
 
     return (
-        <img
+        <img id = {name}
             ref = {setNodeRef}
             {...listeners}
             {...attributes}

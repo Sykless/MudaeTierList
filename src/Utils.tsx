@@ -1,4 +1,5 @@
-import type { Coordinates } from "@dnd-kit/utilities"
+import type { Active, Collision, DroppableContainer, Over } from "@dnd-kit/core"
+import type { CharacterProperties } from "./components/Character"
 
 export const CHARACTERS_PER_LINE_TIER = 15
 export const CHARACTERS_PER_LINE_POOL = 20
@@ -6,20 +7,72 @@ export const CHARACTER_HEIGHT = 112
 export const CHARACTER_WIDTH = 72
 export const POOL_ID = -1
 
+export const CHARACTER = "character"
+export const TIER = "tier"
+export const POOL = "pool"
+
 export function proxifyImageUrl(originalUrl: string) {
     return `https://super-field-ca48.rakouett-du-56.workers.dev/?url=${originalUrl}`
 }
 
-export function isInRect(coordinates: Coordinates | null, rect: DOMRect | undefined) {
-    if (coordinates && rect)
+export function findDroppable(collisionList: Collision[], droppableType: string) {
+    return collisionList.filter(droppable => 
+            droppable.data?.droppableContainer?.data.current.type == droppableType)
+}
+
+export function findCharacterIndex(characterList: CharacterProperties[], characterName: string) {
+    return characterList.findIndex(character => character.name === characterName)
+            ?? characterList.length - 1
+}
+
+export function getTargetTierId(over: Over) {
+    return over.data.current?.type == CHARACTER
+        ? over.data.current.character.tierId
+        : over.id
+}
+
+export function simulateCharacterSwap(droppableContainer: Collision[], args: {droppableContainers: DroppableContainer[], active: Active}) {
+    const originTierId = args.active.data.current?.character?.tierId
+    const targetTierId = droppableContainer[0].id
+
+    // When reordering characters within the same tier
+    if (originTierId == targetTierId)
     {
-        // Check if mouse pointer is between rect coordinates
-        if (coordinates.x >= rect.left && coordinates.x <= rect.right
-            && coordinates.y >= rect.top && coordinates.y <= rect.bottom) {
-            return true;
+        // Retrieve character list from tier/pool
+        const characterList = droppableContainer[0]?.data?.droppableContainer?.data.current.type == TIER
+            ? droppableContainer[0]?.data?.droppableContainer?.data.current.tier.characters
+            : droppableContainer[0]?.data?.droppableContainer?.data.current.pool.characters
+
+        // Replace tier/pool drop with last character in tier to simulate swap
+        if (characterList.length) {
+            const lastCharacterInTier = characterList[characterList.length - 1]
+
+            const lastDroppableCharacter = args.droppableContainers.filter(
+                container => container.data.current?.character?.name === lastCharacterInTier.name
+            )
+
+            return [{
+                id: lastDroppableCharacter[lastDroppableCharacter.length - 1].id,
+                data: { droppableContainer: lastDroppableCharacter[lastDroppableCharacter.length - 1] }
+            }]
         }
     }
 
-    // Default : not in rect
-    return false;
+    // Default : return the container and apply normal drop
+    return droppableContainer
+}
+
+export function invertTranslate3d(transform: string) {
+    if (!transform || transform === "none")
+        return "matrix(1, 0, 0, 1, 0, 0)"
+
+    const values = transform.match(/matrix\(([^)]+)\)/)?.[1]
+        .split(",")
+        .map(v => v.trim())
+
+    if (!values) return transform
+    const [a, b, c, d, tx, ty] = values
+
+    // Invert x and y values
+    return `matrix(${a}, ${b}, ${c}, ${d}, ${-parseFloat(tx)}, ${-parseFloat(ty)})`
 }
