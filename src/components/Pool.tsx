@@ -1,7 +1,7 @@
+import type { CharacterProperties } from "./Character"
 import Character from "./Character"
 import PreviewTierCharacter from "../preview/PreviewTierCharacter"
-import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_ID } from "../Utils"
-import type { CharacterProperties } from "./Character"
+import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_HEADER_HEIGHT, POOL_ID } from "../Utils"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { rectSortingStrategy , SortableContext } from "@dnd-kit/sortable"
 import { Fragment, useEffect, useRef, useState, type RefObject } from "react"
@@ -34,7 +34,7 @@ function Pool({ characters, poolRef }: PoolProperties)
         : isOver ? characters.length : -1
 
     // Pool adjustable parameters
-    const [poolHeight, setPoolHeight] = useState(160)
+    const [poolHeight, setPoolHeight] = useState(POOL_HEADER_HEIGHT + CHARACTER_HEIGHT + 10)
     const [isSticky, setSticky] = useState(true)
     const currentPosition = useRef(window.scrollY)
 
@@ -87,7 +87,8 @@ function Pool({ characters, poolRef }: PoolProperties)
         function onMove(e: any) {
             const delta = startY - e.clientY
             setPoolHeight(
-                Math.max(32, Math.min(32 + 5 * CHARACTER_HEIGHT, startHeight + delta))
+                Math.max(POOL_HEADER_HEIGHT,
+                         Math.min(POOL_HEADER_HEIGHT + 5 * CHARACTER_HEIGHT, startHeight + delta))
             )
         }
 
@@ -112,13 +113,15 @@ function Pool({ characters, poolRef }: PoolProperties)
             }}>
 
             {/* Header : TODO display header differently if not sticky */}
-            <div className = "resizeHandle" onMouseDown = {resizePool} style = {{
-                cursor: isSticky ? "ns-resize" : "default",
-                ["--handle-color" as any]: `rgba(0,0,0,${isSticky ? 0.45 : 0})`
-            }} />
+            <div style = {{height: POOL_HEADER_HEIGHT}}>
+                <div className = "resizeHandle" onMouseDown = {resizePool} style = {{
+                    cursor: isSticky ? "ns-resize" : "default",
+                    ["--handle-color" as any]: `rgba(0,0,0,${isSticky ? 0.45 : 0})`
+                }} />
 
-            <div className = "poolHeader">
-                {/* <input placeholder="Search..." /> <span>34 remaining</span> */}
+                <div className = "poolHeader">
+                    {/* <input placeholder="Search..." /> <span>34 remaining</span> */}
+                </div>
             </div>
 
             {/* Actual droppable character pool */}

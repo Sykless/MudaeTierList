@@ -11,6 +11,7 @@ import { useRef, useState } from "react"
 import { arrayMove } from "@dnd-kit/sortable"
 import { DndContext, pointerWithin } from "@dnd-kit/core"
 import type { DragEndEvent } from "@dnd-kit/core"
+import Panel from "./components/Panel"
 
 const TIERS = [
     {"label": "S", "color": "#ff595e"},
@@ -181,7 +182,7 @@ function App()
 
             <PreviewDragCharacter />
             <PreviewSwapCharacter />
-            <Import onImport = {handleImportCharacters} />
+            <Panel onImport = {handleImportCharacters} />
             <Tierlist tiers = {tiers} />
             <Pool characters = {pool} poolRef = {poolRef} />
         </DndContext>

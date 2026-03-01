@@ -5,6 +5,7 @@ export const CHARACTERS_PER_LINE_TIER = 15
 export const CHARACTERS_PER_LINE_POOL = 20
 export const CHARACTER_HEIGHT = 112
 export const CHARACTER_WIDTH = 72
+export const POOL_HEADER_HEIGHT = 32
 export const POOL_ID = -1
 
 export const CHARACTER = "character"
