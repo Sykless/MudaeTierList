@@ -34,7 +34,7 @@ function Import({ onImport }: ImportProperties) {
             if (parts.length !== 2)
                 continue
 
-            const name = parts[0].trim()
+            const name = parts[0].replace(/ \| .*/, '').trim(); // Remove aliases
             const imageUrl = parts[1].trim()
 
             // Empty name or url, skip line

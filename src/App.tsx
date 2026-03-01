@@ -40,14 +40,58 @@ function App()
         }))
     )
 
+
+    
     // Character import feature
-    function handleImportCharacters(importedCharacters: CharacterProperties[]) {
+    function handleImportCharacters(importedCharacters: CharacterProperties[])
+    {
+        // Map all already present characters' names to asociated characters
+        const allCharacters = new Map([
+            ...tiers.flatMap(tier => tier.characters),
+            ...pool
+        ].map(character => [character.name, character]))
+
+        // Map all imported characters' names to asociated characters
+        const importedCharactersMap = new Map(
+            importedCharacters.map(character => [character.name, character])
+        )
+
+        // Retrieve all new characters in imported data
+        const newCharacters = importedCharacters.filter(character => 
+            !allCharacters.has(character.name)
+        )
+
+        updateTiers(prev =>
+        {
+            // Iterate on each tier character and compare with imported characters
+            return prev.map((tier) => {
+                const updatedCharacter = tier.characters.map(character =>
+                {
+                    // Update already present characters image from imported data
+                    return importedCharactersMap.has(character.name)
+                        ? { ...character, image: importedCharactersMap.get(character.name)!.image }
+                        : character
+                })
+
+                return {...tier, characters: updatedCharacter}
+            })
+        })
+
         updatePool(prev => {
-            const existingNames = new Set(prev.map(c => c.name))
-            const filtered = importedCharacters.filter(c => !existingNames.has(c.name))
-            return [...prev, ...filtered]
+            const updatedPool = prev.map(character =>
+            {
+                // Update already present characters image from imported data
+                return importedCharactersMap.has(character.name)
+                    ? { ...character, image: importedCharactersMap.get(character.name)!.image }
+                    : character
+            })
+
+            // Add new imported characters at the bottom of the pool
+            return [...updatedPool, ...newCharacters]
         })
     }
+
+
 
     // Called after a character is dropped
     function handleDragEnd(event: DragEndEvent) {
@@ -157,6 +201,7 @@ function App()
         })
     }
 
+    
     // Render app 
     return (
         <DndContext
@@ -178,9 +223,12 @@ function App()
                 else return collisions; 
             }}>
 
+            {/* Helpers */}
             <ScrollRemeasurer />
             <PreviewDragCharacter />
             <PreviewSwapCharacter />
+
+            {/* Actual displayed components */}
             <Panel onImport = {handleImportCharacters} />
             <Tierlist tiers = {tiers} />
             <Pool characters = {pool} />
