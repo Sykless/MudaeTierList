@@ -1,6 +1,9 @@
+// @ts-ignore
+import domtoimage from 'dom-to-image-more'; // Does not ship its type, ignore generated warning
+import { useEffect } from "react"
+
 import { useDndContext, type Active, type Collision, type DroppableContainer, type Over } from "@dnd-kit/core"
 import type { CharacterProperties } from "./components/Character"
-import { useEffect } from "react"
 
 export const CHARACTERS_PER_LINE_TIER = 15
 export const CHARACTERS_PER_LINE_POOL = 20
@@ -85,20 +88,74 @@ export function invertTranslate3d(transform: string) {
     return `matrix(${a}, ${b}, ${c}, ${d}, ${-parseFloat(tx)}, ${-parseFloat(ty)})`
 }
 
+// Screenshot tierlist and return as blob
+export async function captureTierlist(): Promise<Blob> {
+    const element = document.querySelector(".tierlist") as HTMLElement;
+    const rect = element.getBoundingClientRect();
+
+    // Convert cloned tierlist to PNG using dom-to-image-more
+    const dataUrl = await domtoimage.toPng(element, {
+        width: rect.width,
+        height: rect.height,
+        bgcolor: "#1e1e1e",
+        cacheBust: true,
+        style: {
+            margin: "0",
+        }
+    });
+
+    // Convert data URL to Blob
+    const response = await fetch(dataUrl);
+    return await response.blob();
+}
+
+// Edit PNG file to add json data in it
+export async function appendJsonToPng(pngBlob: Blob, jsonData: string): Promise<Blob> {
+    const pngBuffer = await pngBlob.arrayBuffer()
+
+    const encoder = new TextEncoder()
+    const jsonBytes = encoder.encode(jsonData)
+    const marker = encoder.encode("\nMUDAE_TIERLIST_JSON_START\n")
+
+    const combined = new Uint8Array(
+        pngBuffer.byteLength + marker.byteLength + jsonBytes.byteLength
+    )
+
+    combined.set(new Uint8Array(pngBuffer), 0)
+    combined.set(marker, pngBuffer.byteLength)
+    combined.set(jsonBytes, pngBuffer.byteLength + marker.byteLength)
+
+    return new Blob([combined], { type: "image/png" })
+}
+
+export function downloadFile(fileName: string, file: Blob)
+{
+    // Create link from file contents
+    const url = URL.createObjectURL(file)
+    const link = document.createElement("a")
+
+    // Simulate click on generated link
+    link.href = url
+    link.download = fileName
+    link.click()
+    URL.revokeObjectURL(url)
+}
+    
+
 // Remeasure Droppable containers when scrolling (not enabled by default)
 export function ScrollRemeasurer() {
   const { measureDroppableContainers, droppableRects, active } = useDndContext()
 
   useEffect(() => {
-    if (!active) return
+        if (!active) return
 
-    const handleScroll = () => {
-      measureDroppableContainers(Array.from(droppableRects.keys()))
-    }
+        const handleScroll = () => {
+            measureDroppableContainers(Array.from(droppableRects.keys()))
+        }
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [active, droppableRects, measureDroppableContainers])
+        window.addEventListener("scroll", handleScroll)
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [active, droppableRects, measureDroppableContainers])
 
   return null
 }
