@@ -5,7 +5,7 @@ import Panel from "./components/Panel"
 import Tierlist from "./components/Tierlist"
 import PreviewDragCharacter from "./preview/PreviewDragCharacter"
 import PreviewSwapCharacter from "./preview/PreviewSwapCharacter"
-import { CHARACTER, TIER, POOL, POOL_ID, findCharacterIndex, findDroppable, getTargetTierId,  simulateCharacterSwap  } from "./Utils"
+import { CHARACTER, TIER, POOL, POOL_ID, findCharacterIndex, findDroppable, getTargetTierId,  simulateCharacterSwap, ScrollRemeasurer  } from "./Utils"
 
 import { useState } from "react"
 import { arrayMove } from "@dnd-kit/sortable"
@@ -178,6 +178,7 @@ function App()
                 else return collisions; 
             }}>
 
+            <ScrollRemeasurer />
             <PreviewDragCharacter />
             <PreviewSwapCharacter />
             <Panel onImport = {handleImportCharacters} />

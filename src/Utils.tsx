@@ -1,5 +1,6 @@
-import type { Active, Collision, DroppableContainer, Over } from "@dnd-kit/core"
+import { useDndContext, type Active, type Collision, type DroppableContainer, type Over } from "@dnd-kit/core"
 import type { CharacterProperties } from "./components/Character"
+import { useEffect } from "react"
 
 export const CHARACTERS_PER_LINE_TIER = 15
 export const CHARACTERS_PER_LINE_POOL = 20
@@ -76,4 +77,22 @@ export function invertTranslate3d(transform: string) {
 
     // Invert x and y values
     return `matrix(${a}, ${b}, ${c}, ${d}, ${-parseFloat(tx)}, ${-parseFloat(ty)})`
+}
+
+// Remeasure Droppable containers when scrolling (not enabled by default)
+export function ScrollRemeasurer() {
+  const { measureDroppableContainers, droppableRects, active } = useDndContext()
+
+  useEffect(() => {
+    if (!active) return
+
+    const handleScroll = () => {
+      measureDroppableContainers(Array.from(droppableRects.keys()))
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [active, droppableRects, measureDroppableContainers])
+
+  return null
 }
