@@ -1,17 +1,16 @@
 import type { CharacterProperties } from "./components/Character"
 import type { TierProperties } from "./components/Tier"
 import Pool from "./components/Pool"
-import Import from "./components/Import"
+import Panel from "./components/Panel"
 import Tierlist from "./components/Tierlist"
 import PreviewDragCharacter from "./preview/PreviewDragCharacter"
 import PreviewSwapCharacter from "./preview/PreviewSwapCharacter"
 import { CHARACTER, TIER, POOL, POOL_ID, findCharacterIndex, findDroppable, getTargetTierId,  simulateCharacterSwap  } from "./Utils"
 
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { arrayMove } from "@dnd-kit/sortable"
 import { DndContext, pointerWithin } from "@dnd-kit/core"
 import type { DragEndEvent } from "@dnd-kit/core"
-import Panel from "./components/Panel"
 
 const TIERS = [
     {"label": "S", "color": "#ff595e"},
@@ -30,7 +29,6 @@ function App()
 {
     // Keep track of pool for collision algorithm
     const [pool, updatePool] = useState<CharacterProperties[]>([])
-    const poolRef = useRef<HTMLDivElement | null>(null)
 
     // Assign each tier label to a Tier object, id going from 0 to 9
     const [tiers, updateTiers] = useState<TierProperties[]>(
@@ -184,7 +182,7 @@ function App()
             <PreviewSwapCharacter />
             <Panel onImport = {handleImportCharacters} />
             <Tierlist tiers = {tiers} />
-            <Pool characters = {pool} poolRef = {poolRef} />
+            <Pool characters = {pool} />
         </DndContext>
     )
 }

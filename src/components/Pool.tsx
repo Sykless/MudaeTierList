@@ -4,22 +4,24 @@ import PreviewTierCharacter from "../preview/PreviewTierCharacter"
 import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_HEADER_HEIGHT, POOL_ID } from "../Utils"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { rectSortingStrategy , SortableContext } from "@dnd-kit/sortable"
-import { Fragment, useEffect, useRef, useState, type RefObject } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 
-export type PoolProperties = {
+type PoolProperties = {
     characters: CharacterProperties[]
-    poolRef: RefObject<HTMLDivElement | null>
 }
 
 // Pool of characters to sort
-function Pool({ characters, poolRef }: PoolProperties)
+function Pool({ characters }: PoolProperties)
 {
+    // Keep track of pool object for height calculation
+    const poolRef = useRef<HTMLDivElement | null>(null)
+
     // Make Pool content droppable 
     const {isOver, setNodeRef} = useDroppable({
         id: POOL_ID,
         data: {
             type: POOL,
-            pool: {characters, poolRef} as PoolProperties
+            pool: {characters} as PoolProperties
         }
     })
 
