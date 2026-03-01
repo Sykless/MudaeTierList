@@ -3,13 +3,16 @@ import { useEffect, useRef, useState } from "react"
 import Import from "./Import"
 import Export from "./Export"
 import type { CharacterProperties } from "./Character"
+import type { TierProperties } from "./Tier"
 
 type PanelProperties = {
+    tiers: TierProperties[]
+    pool: CharacterProperties[]
     onImport: (characters: CharacterProperties[]) => void
 }
 
 // Import/Export Panel
-function Panel({onImport}: PanelProperties)
+function Panel({tiers, pool, onImport}: PanelProperties)
 {
     // Keep track of open/closed state
     const [isOpen, setOpen] = useState(false)
@@ -31,7 +34,7 @@ function Panel({onImport}: PanelProperties)
             }}>
                 <div className = "panelGrid">
                     <Import onImport = {onImport} />
-                    <Export />
+                    <Export tiers = {tiers} pool = {pool} />
                 </div>
             </div>
 

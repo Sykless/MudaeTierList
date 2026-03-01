@@ -13,8 +13,14 @@ export const CHARACTER = "character"
 export const TIER = "tier"
 export const POOL = "pool"
 
+const PROXY_URL = "https://super-field-ca48.rakouett-du-56.workers.dev/?url="
+
 export function proxifyImageUrl(originalUrl: string) {
-    return `https://super-field-ca48.rakouett-du-56.workers.dev/?url=${originalUrl}`
+    return PROXY_URL + originalUrl;
+}
+
+export function unproxifyImageUrl(proxiedUrl: string) {
+    return proxiedUrl.replace(PROXY_URL, "");
 }
 
 export function findDroppable(collisionList: Collision[], droppableType: string) {

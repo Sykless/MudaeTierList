@@ -229,7 +229,7 @@ function App()
             <PreviewSwapCharacter />
 
             {/* Actual displayed components */}
-            <Panel onImport = {handleImportCharacters} />
+            <Panel tiers = {tiers} pool = {pool} onImport = {handleImportCharacters} />
             <Tierlist tiers = {tiers} />
             <Pool characters = {pool} />
         </DndContext>
