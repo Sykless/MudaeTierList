@@ -1,7 +1,7 @@
 import Character from "./Character"
 import PreviewTierCharacter from "../preview/PreviewTierCharacter"
 import type { CharacterProperties } from "./Character"
-import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER, TIER } from "../Utils"
+import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER, TIER } from "../utils/Shared"
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { Fragment } from "react/jsx-runtime"

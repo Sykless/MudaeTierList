@@ -1,7 +1,7 @@
 import type { CharacterProperties } from "./Character"
 import Character from "./Character"
 import PreviewTierCharacter from "../preview/PreviewTierCharacter"
-import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_HEADER_HEIGHT, POOL_ID } from "../Utils"
+import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_HEADER_HEIGHT, POOL_ID } from "../utils/Shared"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { rectSortingStrategy , SortableContext } from "@dnd-kit/sortable"
 import { Fragment, useEffect, useRef, useState } from "react"

@@ -1,4 +1,4 @@
-import { CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../Utils"
+import { CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../utils/Shared"
 
 type PreviewTierCharacterProperties = {
     characterImage: string

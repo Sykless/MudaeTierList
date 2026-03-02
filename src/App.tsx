@@ -5,12 +5,14 @@ import Panel from "./components/Panel"
 import Tierlist from "./components/Tierlist"
 import PreviewDragCharacter from "./preview/PreviewDragCharacter"
 import PreviewSwapCharacter from "./preview/PreviewSwapCharacter"
-import { CHARACTER, TIER, POOL, POOL_ID, findCharacterIndex, findDroppable, getTargetTierId,  simulateCharacterSwap, ScrollRemeasurer  } from "./Utils"
+import { CHARACTER, TIER, POOL, POOL_ID, findCharacterIndex, findDroppable, getTargetTierId } from "./utils/Shared"
+import { ScrollRemeasurer, simulateCharacterSwap } from "./utils/Droppable"
 
 import { useState } from "react"
 import { arrayMove } from "@dnd-kit/sortable"
 import { DndContext, pointerWithin } from "@dnd-kit/core"
 import type { DragEndEvent } from "@dnd-kit/core"
+import { Toaster } from "react-hot-toast";
 
 const TIERS = [
     {"label": "S", "color": "#ff595e"},
@@ -43,7 +45,7 @@ function App()
 
     
     // Character import feature
-    function handleImportCharacters(importedCharacters: CharacterProperties[])
+    function importMudaeCharacters(importedCharacters: CharacterProperties[])
     {
         // Map all already present characters' names to asociated characters
         const allCharacters = new Map([
@@ -89,6 +91,12 @@ function App()
             // Add new imported characters at the bottom of the pool
             return [...updatedPool, ...newCharacters]
         })
+    }
+
+    // Backup import feature
+    function importBackupTierlist(tiers: TierProperties[], pool: CharacterProperties[]) {
+        updateTiers(tiers)
+        updatePool(pool)
     }
 
 
@@ -224,12 +232,16 @@ function App()
             }}>
 
             {/* Helpers */}
-            <ScrollRemeasurer />
             <PreviewDragCharacter />
             <PreviewSwapCharacter />
+            <ScrollRemeasurer />
+            <Toaster toastOptions = {{style: {
+                background: "#1e1e1e",
+                color: "#9D9D9D",
+            }}} />
 
             {/* Actual displayed components */}
-            <Panel tiers = {tiers} pool = {pool} onImport = {handleImportCharacters} />
+            <Panel tiers = {tiers} pool = {pool} mudaeImport = {importMudaeCharacters} backupImport = {importBackupTierlist} />
             <Tierlist tiers = {tiers} />
             <Pool characters = {pool} />
         </DndContext>

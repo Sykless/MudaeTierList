@@ -1,5 +1,6 @@
 import { useDndContext } from "@dnd-kit/core";
-import { CHARACTER, invertTranslate3d } from "../Utils";
+import { CHARACTER } from "../utils/Shared";
+import { invertTranslate3d } from "../utils/Droppable";
 
 // Preview character when swapping
 function PreviewSwapCharacter()

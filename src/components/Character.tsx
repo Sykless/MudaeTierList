@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../Utils"
+import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../utils/Shared"
 
 export type CharacterProperties = {
     name: string

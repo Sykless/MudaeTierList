@@ -92,6 +92,51 @@ body {
     gap: 12px;
 }
 
+.panelRow,
+.importBlock {
+    position: relative;
+    border-radius: 10px;
+}
+
+/* Animated border */
+.importBlock.highlightRow::before,
+.panelRow.highlightRow::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 12px;
+    padding: 2px;
+
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 45%,
+        #4da6ff,
+        transparent 55%,
+        transparent 100%
+    );
+
+    background-size: 200% 100%;
+    animation: borderMove 0.8s ease-out forwards,
+                fadeOut 0.8s ease forwards;
+
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+}
+
+@keyframes borderMove  {
+    from { background-position: 0% 0%; }
+    to   { background-position: 100% 0%; }
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+
 .blockHeader {
     display: flex;
     justify-content: space-between;

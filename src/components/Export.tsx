@@ -1,33 +1,26 @@
 import { DiscordIcon } from "../svg/DiscordIcon"
 import { FileIcon } from "../svg/FileIcon"
 import { ImageIcon } from "../svg/ImageIcon"
-import { appendJsonToPng, captureTierlist, downloadFile, unproxifyImageUrl } from "../Utils"
+import { appendJsonToPng, captureTierlist, downloadFile } from "../utils/PngJson"
 import type { CharacterProperties } from "./Character"
 import type { TierProperties } from "./Tier"
 
 type ExportProperties = {
     tiers: TierProperties[]
     pool: CharacterProperties[]
+    animate: boolean;
 }
 
 // Export tierlist to Mudae, an image or a json backup file
-function Export({tiers, pool}: ExportProperties)
+function Export({tiers, pool, animate}: ExportProperties)
 {
     function getJSONData() {
         const saveFile = {
             app: "Mudae Tierlist",
             version: 1,
             createdAt: new Date().toISOString(),
-            // Export tiers data while removing proxy url
-            tiers: tiers.map(tier => {
-                return {...tier, characters: tier.characters.map(character => {
-                    return {...character, image: unproxifyImageUrl(character.image)}
-                })}
-            }),
-            // Export pool data while removing proxy url
-            pool: pool.map(character => {
-                return {...character, image: unproxifyImageUrl(character.image)}
-            })
+            tiers: tiers,
+            pool: pool
         }
 
         return JSON.stringify(saveFile, null, 2);
@@ -75,18 +68,18 @@ function Export({tiers, pool}: ExportProperties)
             </div>
 
             {/* Image/File Export */}
-            <div className = "panelRow" >
+            <div className = {`panelRow ${animate ? "highlightRow" : ""}`}>
 
                 {/* Image Export */}
                 <div className = "panelBlock smallBlock exportAction" onClick = {exportPNG}>
                     <ImageIcon />
-                    Export vers Image
+                    Export vers Screenshot
                 </div>
 
                 {/* File Export */}
                 <div className = "panelBlock smallBlock exportAction" onClick = {exportJSON}>
                     <FileIcon />
-                    Export vers Fichier
+                    Export vers Backup
                 </div>
             </div>
         </div>

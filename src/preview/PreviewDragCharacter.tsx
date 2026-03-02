@@ -1,5 +1,5 @@
 import { DragOverlay, useDndContext } from "@dnd-kit/core"
-import { CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../Utils";
+import { CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../utils/Shared";
 
 // Preview dragged character
 function PreviewDragCharacter()
