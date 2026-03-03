@@ -6,9 +6,9 @@ import Tierlist from "./components/Tierlist"
 import PreviewDragCharacter from "./preview/PreviewDragCharacter"
 import PreviewSwapCharacter from "./preview/PreviewSwapCharacter"
 import { CHARACTER, TIER, POOL, POOL_ID, findCharacterIndex, findDroppable, getTargetTierId } from "./utils/Shared"
-import { ScrollRemeasurer, simulateCharacterSwap } from "./utils/Droppable"
+import { isInRect, ScrollRemeasurer, simulateCharacterSwap } from "./utils/Droppable"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { arrayMove } from "@dnd-kit/sortable"
 import { DndContext, pointerWithin } from "@dnd-kit/core"
 import type { DragEndEvent } from "@dnd-kit/core"
@@ -31,6 +31,7 @@ function App()
 {
     // Initialize empty pool
     const [pool, updatePool] = useState<CharacterProperties[]>([])
+    const poolContentRef = useRef<HTMLDivElement | null>(null)
 
     // Assign each tier label to a Tier object, id going from 0 to 9
     const [tiers, updateTiers] = useState<TierProperties[]>(
@@ -216,19 +217,26 @@ function App()
             autoScroll = {false}
             onDragEnd = {handleDragEnd}
             collisionDetection = {(args) => {
-                const collisions = pointerWithin(args) // Default behavior : pointer within
+                const { pointerCoordinates } = args;
+                const collisions = pointerWithin(args) 
                 const droppableCharacter = findDroppable(collisions, CHARACTER)
                 const droppablePool = findDroppable(collisions, POOL)
                 const droppableTier = findDroppable(collisions, TIER)
+                const targetCharacterTierId = droppableCharacter[0]?.data?.droppableContainer?.data.current.character.tierId;
 
-                // Drop priority : pool character -> pool -> tier character -> tier
-                if (droppableCharacter[0]?.data?.droppableContainer?.data.current.character.tierId == POOL_ID) {
-                    return droppableCharacter;
+                // Cursor in pool, drop priority : pool character -> pool
+                if (isInRect(pointerCoordinates, poolContentRef?.current?.getBoundingClientRect())){
+                    if (targetCharacterTierId == POOL_ID)
+                        return droppableCharacter;
+                    else if (droppablePool.length)
+                        return simulateCharacterSwap(droppablePool, args);
                 }
-                else if (droppablePool.length) return simulateCharacterSwap(droppablePool, args);
-                else if (droppableCharacter.length) return droppableCharacter;
-                else if (droppableTier.length) return simulateCharacterSwap(droppableTier, args)
-                else return collisions; 
+                // Cursor not in pool, drop priority : tier character -> tier
+                else if (targetCharacterTierId > POOL_ID) return droppableCharacter;
+                else if (droppableTier.length) return simulateCharacterSwap(droppableTier, args);
+                
+                // None of the controlled cases : return no droppable found
+                return [];
             }}>
 
             {/* Helpers */}
@@ -243,7 +251,7 @@ function App()
             {/* Actual displayed components */}
             <Panel tiers = {tiers} pool = {pool} mudaeImport = {importMudaeCharacters} backupImport = {importBackupTierlist} />
             <Tierlist tiers = {tiers} />
-            <Pool characters = {pool} />
+            <Pool characters = {pool} poolContentRef = {poolContentRef} />
         </DndContext>
     )
 }

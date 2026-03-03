@@ -1,6 +1,6 @@
-
-import { useEffect } from "react"
+import type { Coordinates } from "@dnd-kit/utilities"
 import { useDndContext, type Active, type Collision, type DroppableContainer } from "@dnd-kit/core"
+import { useEffect } from "react"
 import { TIER } from "./Shared"
 
 // Override default behavior when dropping character in tier, simulate swap with last character in tier
@@ -49,6 +49,20 @@ export function invertTranslate3d(transform: string) {
 
     // Invert x and y values
     return `matrix(${a}, ${b}, ${c}, ${d}, ${-parseFloat(tx)}, ${-parseFloat(ty)})`
+}
+
+export function isInRect(coordinates: Coordinates | null, rect: DOMRect | undefined) {
+    if (coordinates && rect)
+    {
+        // Check if mouse pointer is between rect coordinates
+        if (coordinates.x >= rect.left && coordinates.x <= rect.right
+            && coordinates.y >= rect.top && coordinates.y <= rect.bottom) {
+            return true;
+        }
+    }
+
+    // Default : not in rect
+    return false;
 }
 
 // Remeasure Droppable containers when scrolling (not enabled by default)

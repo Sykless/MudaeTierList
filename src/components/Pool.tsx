@@ -4,24 +4,22 @@ import PreviewTierCharacter from "../preview/PreviewTierCharacter"
 import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_HEADER_HEIGHT, POOL_ID } from "../utils/Shared"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { rectSortingStrategy , SortableContext } from "@dnd-kit/sortable"
-import { Fragment, useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState, type RefObject } from "react"
 
 type PoolProperties = {
     characters: CharacterProperties[]
+    poolContentRef: RefObject<HTMLDivElement | null>
 }
 
 // Pool of characters to sort
-function Pool({ characters }: PoolProperties)
+function Pool({ characters, poolContentRef }: PoolProperties)
 {
-    // Keep track of pool object for height calculation
-    const poolRef = useRef<HTMLDivElement | null>(null)
-
-    // Make Pool content droppable 
+    // Make Pool droppable 
     const {isOver, setNodeRef} = useDroppable({
         id: POOL_ID,
         data: {
             type: POOL,
-            pool: {characters} as PoolProperties
+            pool: {characters, poolContentRef} as PoolProperties
         }
     })
 
@@ -54,7 +52,7 @@ function Pool({ characters }: PoolProperties)
             const viewportBottom = yPosition + window.innerHeight
             const documentHeight = document.documentElement.scrollHeight
 
-            const poolTotalHeight = poolRef?.current?.offsetHeight || 0
+            const poolTotalHeight = poolContentRef?.current?.offsetHeight || 0
             const scrollingUp = yPosition < currentPosition.current
 
             // Default : keep sticky value
@@ -83,7 +81,7 @@ function Pool({ characters }: PoolProperties)
 
         window.addEventListener("scroll", handleScroll)
         return () => window.removeEventListener("scroll", handleScroll)
-    }, [isSticky, poolRef, characters])
+    }, [isSticky, poolContentRef, characters])
 
     // Resize pool when dragging it upwards or downwards
     function resizePool(e: any) {
@@ -128,7 +126,7 @@ function Pool({ characters }: PoolProperties)
     }
 
     return (
-        <div ref = {poolRef} className = "characterPool"
+        <div ref = {setNodeRef} className = "characterPool"
             style = {{zIndex: 999,
                 maxWidth: CHARACTERS_PER_LINE_POOL * CHARACTER_WIDTH,
                 minHeight: isSticky ? "" : poolHeight,
@@ -151,7 +149,7 @@ function Pool({ characters }: PoolProperties)
             </div>
 
             {/* Actual droppable character pool */}
-            <div ref = {setNodeRef} className = "poolContent" style = {{
+            <div ref = {poolContentRef} className = "poolContent" style = {{
                 gridTemplateColumns: `repeat(auto-fill, ${CHARACTER_WIDTH}px)`,
                 gridAutoRows: CHARACTER_HEIGHT
             }}>
