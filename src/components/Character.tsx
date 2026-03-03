@@ -1,6 +1,6 @@
+import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../utils/Shared"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../utils/Shared"
 
 export type CharacterProperties = {
     name: string
@@ -8,16 +8,19 @@ export type CharacterProperties = {
     tierId: number
 }
 
-function Character({ name, image, tierId }: CharacterProperties) {
-
+function Character({ name, image, tierId }: CharacterProperties)
+{
+    // Make Character sortable
     const {attributes, isDragging, listeners, setNodeRef, transform, transition} = useSortable({
         id: name,
         data:{
             type: CHARACTER,
             character: {name, image, tierId} as CharacterProperties
-        }
+        },
+        animateLayoutChanges: () => false // Only leave default swap animations
     })
 
+    // Hide original character when dragged
     const style = isDragging
         ? {opacity: 0}
         : {transform: CSS.Translate.toString(transform), transition} 

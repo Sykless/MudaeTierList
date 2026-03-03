@@ -29,7 +29,7 @@ const TIERS = [
 
 function App()
 {
-    // Keep track of pool for collision algorithm
+    // Initialize empty pool
     const [pool, updatePool] = useState<CharacterProperties[]>([])
 
     // Assign each tier label to a Tier object, id going from 0 to 9

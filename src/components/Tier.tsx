@@ -1,10 +1,11 @@
 import Character from "./Character"
 import PreviewTierCharacter from "../preview/PreviewTierCharacter"
 import type { CharacterProperties } from "./Character"
-import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER, TIER } from "../utils/Shared"
+import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER, TIER } from "../utils/Shared"
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { Fragment } from "react/jsx-runtime"
+import { useEffect, useState } from "react"
 
 export type TierProperties = {
     id: number
@@ -26,13 +27,36 @@ function Tier({ id, label, color, characters }: TierProperties)
     })
 
     const {active, over} = useDndContext();
+    const [validOver, setValidOver] = useState(false)
     const draggedCharacter = active?.data?.current?.character as CharacterProperties
-    const moveInOwnTier = draggedCharacter?.tierId === id
+    const isDraggingFromHere = draggedCharacter && draggedCharacter.tierId == id
+
+    // Make sure over is undefined only if dropping on undroppable container
+    useEffect(() => {
+        if (!active) setValidOver(false)
+        else if (over) setValidOver(true)
+    }, [active, over])
 
     // Preview character at its dropped position, -1 if not in this tier
     const previewIndex = over?.data?.current?.type === CHARACTER
         ? characters.findIndex(character => character.name == over?.data?.current?.character.name)
         : isOver ? characters.length : -1
+
+    // Default : display characters as is
+    let visualCharacters = characters
+
+    // If dragging away from the tier, display dragged character at the bottom the tier
+    if (draggedCharacter) {
+        const targetTierId = getTargetTierId(over)
+        const isDraggingOutside = validOver && targetTierId != id
+
+        // Move dragged character at the bottom of the tier
+        if (isDraggingFromHere && isDraggingOutside) {
+            visualCharacters = [...characters.filter(
+                    character => character.name !== draggedCharacter.name
+                ), draggedCharacter]
+        }
+    }
 
     return (
         <div className="tier">
@@ -46,13 +70,13 @@ function Tier({ id, label, color, characters }: TierProperties)
                 minHeight: CHARACTER_HEIGHT,
             }}>
 
-                <SortableContext items = {characters.map(character => character.name)}
-                    strategy = {rectSortingStrategy }>
+                <SortableContext items = {visualCharacters.map(character => character.name)}
+                    strategy = {rectSortingStrategy}>
 
                     {/* Display characters in tier + preview if dragged on */}
-                    {characters.map((character, index) => (
+                    {visualCharacters.map((character, index) => (
                         <Fragment key = {character.name}>
-                            {!moveInOwnTier && index == previewIndex && draggedCharacter &&
+                            {!isDraggingFromHere && index == previewIndex && draggedCharacter &&
                                 <PreviewTierCharacter characterImage = {draggedCharacter.image} />
                             }
 
@@ -65,7 +89,7 @@ function Tier({ id, label, color, characters }: TierProperties)
                     ))}
 
                     {/* Preview character is at the end of tier */}
-                    {!moveInOwnTier && previewIndex == characters.length && draggedCharacter &&
+                    {!isDraggingFromHere && previewIndex == visualCharacters.length && draggedCharacter &&
                         <PreviewTierCharacter characterImage = {draggedCharacter.image} />
                     }
                 </SortableContext>

@@ -1,7 +1,7 @@
 import type { CharacterProperties } from "./Character"
 import Character from "./Character"
 import PreviewTierCharacter from "../preview/PreviewTierCharacter"
-import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_HEADER_HEIGHT, POOL_ID } from "../utils/Shared"
+import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_HEADER_HEIGHT, POOL_ID } from "../utils/Shared"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { rectSortingStrategy , SortableContext } from "@dnd-kit/sortable"
 import { Fragment, useEffect, useRef, useState } from "react"
@@ -29,6 +29,13 @@ function Pool({ characters }: PoolProperties)
     const {active, over} = useDndContext();
     const draggedCharacter = active?.data?.current?.character as CharacterProperties
     const moveInOwnTier = draggedCharacter?.tierId === POOL_ID
+    const [validOver, setValidOver] = useState(false)
+
+    // Make sure over is undefined only if dropping on undroppable container
+    useEffect(() => {
+        if (!active) setValidOver(false)
+        else if (over) setValidOver(true)
+    }, [active, over])
 
     // Preview character at its dropped position, -1 if not in this tier
     const previewIndex = over?.data?.current?.type === CHARACTER
@@ -103,6 +110,23 @@ function Pool({ characters }: PoolProperties)
         window.addEventListener("mouseup", onUp)
     }
 
+    // Default : display characters as is
+    let visualCharacters = characters
+
+    // If dragging away from the pool, display dragged character at the bottom the pool
+    if (draggedCharacter) {
+        const targetTierId = getTargetTierId(over)
+        const isDraggingFromHere = draggedCharacter.tierId == POOL_ID
+        const isDraggingOutside = validOver && targetTierId != POOL_ID
+
+        // Move dragged character at the bottom of the pool
+        if (isDraggingFromHere && isDraggingOutside) {
+            visualCharacters = [...characters.filter(
+                    character => character.name !== draggedCharacter.name
+                ), draggedCharacter]
+        }
+    }
+
     return (
         <div ref = {poolRef} className = "characterPool"
             style = {{zIndex: 999,
@@ -132,11 +156,11 @@ function Pool({ characters }: PoolProperties)
                 gridAutoRows: CHARACTER_HEIGHT
             }}>
 
-                <SortableContext items = {characters.map(character => character.name)}
-                    strategy = {rectSortingStrategy }>
+                <SortableContext items = {visualCharacters.map(character => character.name)}
+                    strategy = {rectSortingStrategy}>
 
                     {/* Display characters in pool + preview if dragged on */}
-                    {characters.map((character, index) => (
+                    {visualCharacters.map((character, index) => (
                         <Fragment key = {character.name}>
                             {!moveInOwnTier && index == previewIndex && draggedCharacter &&
                                 <PreviewTierCharacter characterImage = {draggedCharacter.image} />
@@ -151,7 +175,7 @@ function Pool({ characters }: PoolProperties)
                     ))}
 
                     {/* Preview character is at the end of tier */}
-                    {!moveInOwnTier && previewIndex == characters.length && draggedCharacter &&
+                    {!moveInOwnTier && previewIndex == visualCharacters.length && draggedCharacter &&
                         <PreviewTierCharacter characterImage = {draggedCharacter.image} />
                     }
                 </SortableContext>

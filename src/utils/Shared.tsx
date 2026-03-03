@@ -29,8 +29,8 @@ export function findCharacterIndex(characterList: CharacterProperties[], charact
             ?? characterList.length - 1
 }
 
-export function getTargetTierId(over: Over) {
-    return over.data.current?.type == CHARACTER
-        ? over.data.current.character.tierId
-        : over.id
+export function getTargetTierId(over: Over | null) {
+    return over?.data?.current?.type == CHARACTER
+        ? over?.data?.current?.character?.tierId
+        : over?.id
 }
