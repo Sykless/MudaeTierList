@@ -1,9 +1,16 @@
+
 import { DiscordIcon } from "../svg/DiscordIcon"
 import { FileIcon } from "../svg/FileIcon"
 import { ImageIcon } from "../svg/ImageIcon"
+import { CheckmarkIcon } from "../svg/CheckmarkIcon"
+import { CopyIcon } from "../svg/CopyIcon"
 import { appendJsonToPng, captureTierlist, downloadFile } from "../utils/PngJson"
+import { EXPORT_HELPER } from "../utils/Shared"
+import Helper from "./Helper"
 import type { CharacterProperties } from "./Character"
 import type { TierProperties } from "./Tier"
+import { useState } from "react"
+import toast from "react-hot-toast"
 
 type ExportProperties = {
     tiers: TierProperties[]
@@ -14,6 +21,24 @@ type ExportProperties = {
 // Export tierlist to Mudae, an image or a json backup file
 function Export({tiers, pool, animate}: ExportProperties)
 {
+    const [exportText, setExportText] = useState("")
+    const [copied, setCopied] = useState(false)
+
+    const handleCopy = async () => {
+        if (!exportText) return
+
+        try {
+            await navigator.clipboard.writeText(exportText)
+            toast.success("Commande copiée", {"duration": 1000});
+            
+            // Update copy icon
+            setCopied(true)
+            setTimeout(() => setCopied(false), 1200)
+        } catch (err) {
+            toast.error("Erreur dans la copie " + err)
+        }
+    }
+
     function getJSONData() {
         const saveFile = {
             app: "Mudae Tierlist",
@@ -49,6 +74,25 @@ function Export({tiers, pool, animate}: ExportProperties)
         downloadFile("MudaeTierlist-" + new Date().toISOString() + ".png", finalBlob)
     }
 
+    function exportMudae() {
+        let mudaeCommand = "$sortmarry "
+
+        // Add each character in order to the command
+        tiers.forEach(tier => {
+            tier.characters.forEach(character => {
+                mudaeCommand += character.name + " $ "
+            })
+        })
+
+        // Add pool characters at the bottom of the command
+        pool.forEach(character => {
+            mudaeCommand += character.name + " $ "
+        })
+
+        // Set command text to Export textbox
+        setExportText(mudaeCommand.includes(" $ ") ? mudaeCommand.slice(0,-3) : "")
+    }
+
     return (
         <div className = "exportSection">
             <div className = "sectionTitle">Export</div>
@@ -60,11 +104,26 @@ function Export({tiers, pool, animate}: ExportProperties)
                         <DiscordIcon />
                         Export vers Mudae
                     </span>
-                    <button className = "infoButton">?</button>
+                    <Helper helperType = {EXPORT_HELPER} />
                 </div>
 
-                <button className = "primaryButton">Export</button>
-                <textarea className = "exportTextbox" disabled />
+                <button className = "primaryButton" onClick = {exportMudae}
+                    disabled = {!tiers.some(tier => tier.characters.length) && !pool.length}>
+                    Export
+                </button>
+
+                <div className="exportTextboxWrapper">
+                    <textarea className="exportTextbox" readOnly
+                        value = {exportText}
+                        disabled = {exportText.length == 0}
+                    />
+
+                    {exportText.length > 0 && (
+                        <button className = {`copyButton ${copied ? "copied" : ""}`} onClick = {handleCopy}>
+                            {copied ? <CheckmarkIcon /> : <CopyIcon />}
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Image/File Export */}

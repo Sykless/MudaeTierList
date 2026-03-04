@@ -25,6 +25,7 @@ body {
 
 .primaryButton,
 .secondaryButton,
+.helper,
 .panel {
     font-family: "Inter", sans-serif;
     color: #9D9D9D;
@@ -153,6 +154,11 @@ body {
     color: rgba(255,255,255,0.9);
 }
 
+.primaryButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .secondaryButton {
     flex: 1;
     background: rgba(255,255,255,0.1);
@@ -166,10 +172,90 @@ body {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: none;
-    background: rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.3);
+    border: 1px solid rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.95);
     cursor: pointer;
+    transition: all 150ms ease;
+}
+
+.infoButton:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+.helper {
+    position: absolute;
+    z-index: 9999;
+    background: #1E1E1E;
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    animation: popoverFade 250ms ease-out forwards;
+}
+
+.helperTitle {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.helperText {
+    font-size: 14px;
+    line-height: 1.45;
+    margin-bottom: 12px;
+}
+
+.helperText.secondary {
+    margin-top: 12px;
+    margin-bottom: 0;
+}
+
+.helperImage {
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+}
+
+.inlineCommand {
+    position: relative;
+    font-size: 15px;
+    font-weight: 1000;
+    background: rgba(255, 255, 255, 0.7);
+    color: #101010;
+    padding: 1px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 120ms ease;
+    user-select: none;
+    margin: 4px
+}
+
+.inlineCommand:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+.textButton {
+    position: relative;
+    background: #5a4fd8;
+    color: rgba(255,255,255,0.9);
+    padding: 3px 14px;
+    border-radius: 6px;
+    margin: 4px;
+}
+
+@keyframes popoverFade {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .labelWithIcon {
@@ -206,18 +292,56 @@ body {
     align-items: center;
 }
 
+.exportTextboxWrapper {
+    position: relative;
+    width: 100%;
+    height: 100px;
+}
+
 .exportTextbox {
-    height: 100px; 
+    width: 100%;
+    height: 100%;
     resize: none;
-    border-radius: 8px;
     border: none;
-    padding: 12px;
+    border-radius: 8px;
+    padding: 10px;
+    padding-top: 6px;
     background: rgba(255,255,255,0.1);
     color: rgba(255,255,255,0.9);
+    font-family: Consolas, monospace;
+    transition: all 150ms ease;
 }
 
 .exportTextbox:disabled {
     cursor: not-allowed;
+}
+
+.copyButton {
+    position: absolute;
+    top: 0px;
+    right: 16px;
+    border: none;
+    color: #E5E5E5;
+    background: rgba(0,0,0,0.5);
+    border-radius: 6px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 120ms ease;
+}
+
+.copyButton:hover {
+    opacity: 1;
+    background: rgba(255,255,255,0.12);
+}
+
+.copyButton.copied {
+    background: rgba(80, 200, 120, 0.18);
+    color: #6DFF9A;
+    opacity: 1;
 }
 
 .closeHandle {
