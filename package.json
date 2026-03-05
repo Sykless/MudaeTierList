@@ -16,6 +16,7 @@
     "dom-to-image-more": "^3.7.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-flip-toolkit": "^7.2.4",
     "react-hot-toast": "^2.6.0"
   },
   "devDependencies": {

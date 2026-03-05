@@ -390,14 +390,149 @@ body {
     gap: 0;
 }
 
+.tierName,
+.tierName textarea {
+    color: black;
+    font-size: 14px;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    text-align: center;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    cursor: text;
+    padding: 1px;
+}
+
 .tierName {
     width: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-    color: white;
+}
+
+.tierName textarea {
+    background: transparent;
+    resize: none;
+    border: none;
+    outline: none;
+    overflow: hidden;
+    field-sizing: content;
+    margin: 0;
+}
+
+.tierControls {
+    width: 100px;
+    background: #322e47;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+}
+
+.controlTop {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.controlActions {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+}
+
+.controlArrows {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+
+.tierButton {
+    width: 28px;
+    height: 28px;
+    place-items:center;
+    border-radius:8px;
+    border:none;
+    background:rgba(0,0,0,0.25);
+    cursor:pointer;
+}
+
+.tierButton svg {
+    stroke-width:2;
+    display:block;
+}
+
+.tierButton:hover {
+    background:#3a4150;
+    box-shadow:0 2px 6px rgba(0,0,0,0.35);
+}
+
+.wideButtons {
+    width: 100%;
+}
+
+.colorSection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.colorPickerWrapper {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.mainColorButton {
+    z-index: 999;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: pointer;
+    position: relative;
+}
+
+.colorRadialMenu {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #26233a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.25);
+    animation: radialExpand 0.25s ease forwards;
+}
+
+@keyframes radialExpand {
+    from {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.radialColor {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    cursor: pointer;
 }
 
 .characterPool {

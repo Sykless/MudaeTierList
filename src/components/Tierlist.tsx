@@ -1,3 +1,4 @@
+import { Flipped, Flipper } from "react-flip-toolkit";
 import type { TierProperties } from "./Tier";
 import Tier from "./Tier";
 
@@ -8,16 +9,21 @@ type TierlistProperties = {
 // Preview character in target tier
 function Tierlist({tiers} : TierlistProperties)
 {
+    // Use Flipper to auto-animate tier add/remove/swap
     return (
-        <div className = "tierlist">
+        <Flipper className = "tierlist" flipKey={tiers.map(t => t.id).join()}>
             {tiers.map((tier) => (
-                <Tier key = {tier.id}
-                    id = {tier.id} 
-                    label = {tier.label}
-                    color = {tier.color}
-                    characters = {tier.characters} />
+                <Flipped key={tier.id} flipId={tier.id}>
+                    <div>
+                        <Tier key = {tier.id}
+                            id = {tier.id} 
+                            label = {tier.label}
+                            color = {tier.color}
+                            characters = {tier.characters} />
+                    </div>
+                </Flipped>
             ))}
-        </div>
+        </Flipper>
     )
 }
 

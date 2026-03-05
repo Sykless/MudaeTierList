@@ -5,7 +5,7 @@ import Panel from "./components/Panel"
 import Tierlist from "./components/Tierlist"
 import PreviewDragCharacter from "./preview/PreviewDragCharacter"
 import PreviewSwapCharacter from "./preview/PreviewSwapCharacter"
-import { CHARACTER, TIER, POOL, POOL_ID, findCharacterIndex, findDroppable, getTargetTierId } from "./utils/Shared"
+import { CHARACTER, TIER, POOL, POOL_ID, findCharacterIndex, findDroppable, getTargetTierId, TIER_COLORS, UPWARDS, DOWNWARDS, TierContext } from "./utils/Shared"
 import { isInRect, ScrollRemeasurer, simulateCharacterSwap } from "./utils/Droppable"
 
 import { useRef, useState } from "react"
@@ -14,18 +14,7 @@ import { DndContext, pointerWithin } from "@dnd-kit/core"
 import type { DragEndEvent } from "@dnd-kit/core"
 import { Toaster } from "react-hot-toast";
 
-const TIERS = [
-    {"label": "S", "color": "#ff595e"},
-    {"label": "A", "color": "#ff924c"},
-    {"label": "B", "color": "#ffca3a"},
-    {"label": "C", "color": "#c5ca30"},
-    {"label": "D", "color": "#8ac926"},
-    {"label": "E", "color": "#52b788"},
-    {"label": "F", "color": "#1982c4"},
-    {"label": "G", "color": "#4267ac"},
-    {"label": "H", "color": "#6a4c93"},
-    {"label": "I", "color": "#b5179e"}
-]
+const TIER_LABELS = ["S","A","B","C","D","E","F","G","H","I"]
 
 function App()
 {
@@ -35,16 +24,90 @@ function App()
 
     // Assign each tier label to a Tier object, id going from 0 to 9
     const [tiers, updateTiers] = useState<TierProperties[]>(
-        TIERS.map(({label, color}, index) => ({
+        TIER_LABELS.map((label, index) => ({
             id: index,
             label: label,
-            color: color,
+            color: TIER_COLORS[index],
             characters: [] as CharacterProperties[]
         }))
     )
 
-
     
+    
+    /*
+    *   TIER UPDATE METHODS
+    */
+
+    // Update target tier with provided attributes
+    function updateTier(tierId: number, attributes: {label? : string; color?: string}) {
+        updateTiers(prev =>
+            prev.map(tier =>
+                tier.id === tierId
+                    ? { ...tier, ...attributes }
+                    : tier
+            ))
+    }
+    
+    // Insert tier below target tier with same color/label
+    function insertTier(tierId: number) {
+        updateTiers(prev => {
+            const tierPosition = prev.findIndex(tier => tier.id === tierId)
+            const newTierId = Math.max(...prev.map(tier => tier.id)) + 1
+
+            // Insert new tier in tierlist
+            return [
+                ...prev.slice(0, tierPosition + 1),
+                {
+                    id: newTierId,
+                    color: prev[tierPosition].color,
+                    label: prev[tierPosition].label,
+                    characters: []
+                },
+                ...prev.slice(tierPosition + 1)]
+        })
+    }
+
+    // Remove one tier and move its characters to pool
+    function deleteTier(tierId: number) {
+        const removedTier = tiers.find(tier => tier.id == tierId);
+        
+        // Put all characters from removed tier in the pool
+        if (removedTier && removedTier.characters.length) {
+            updatePool(prev => [...prev, ...removedTier.characters])
+        }
+        
+        // Return new tierlist without target tier
+        updateTiers(prev => {
+            return prev.filter(tier => tier.id != tierId);
+        })
+    }
+
+    // Move a tier one position upwards or downwards
+    function moveTier(tierId: number, direction: number) {
+        updateTiers(prev => {
+            const tierPosition = prev.findIndex(tier => tier.id === tierId)
+
+            // Moving downwards : swap with tier position + 1
+            if (direction == DOWNWARDS) {
+                return tierPosition == prev.length - 1 ? prev : arrayMove(prev, tierPosition, tierPosition + 1)
+            }
+            
+            // Moving upwards : swap with tier position - 1
+            if (direction == UPWARDS) {
+                return tierPosition == 0 ? prev : arrayMove(prev, tierPosition, tierPosition - 1)
+            }
+            
+            // No direction provided : keep tierlist as is
+            return prev;
+        })
+    }
+
+
+
+    /*
+    *   IMPORT METHODS
+    */
+
     // Character import feature
     function importMudaeCharacters(importedCharacters: CharacterProperties[])
     {
@@ -101,6 +164,10 @@ function App()
     }
 
 
+
+    /*
+    *   CHARACTER DRAG AND DROP METHOD
+    */
 
     // Called after a character is dropped
     function handleDragEnd(event: DragEndEvent) {
@@ -250,7 +317,9 @@ function App()
 
             {/* Actual displayed components */}
             <Panel tiers = {tiers} pool = {pool} mudaeImport = {importMudaeCharacters} backupImport = {importBackupTierlist} />
-            <Tierlist tiers = {tiers} />
+            <TierContext.Provider value = {{ updateTier, insertTier, deleteTier, moveTier }}>
+                <Tierlist tiers = {tiers} />
+            </TierContext.Provider>
             <Pool characters = {pool} poolContentRef = {poolContentRef} />
         </DndContext>
     )

@@ -1,11 +1,17 @@
 import Character from "./Character"
+import ColorPicker from "./ColorPicker"
 import PreviewTierCharacter from "../preview/PreviewTierCharacter"
+import { UpwardsIcon } from "../svg/UpwardsIcon"
+import { DownwardsIcon } from "../svg/DownwardsIcon"
+import { AddIcon } from "../svg/AddIcon"
+import { DeleteIcon } from "../svg/DeleteIcon"
+import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER, TIER, TierContext, UPWARDS, DOWNWARDS } from "../utils/Shared"
 import type { CharacterProperties } from "./Character"
-import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER, TIER } from "../utils/Shared"
+
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { Fragment } from "react/jsx-runtime"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 
 export type TierProperties = {
     id: number
@@ -28,8 +34,14 @@ function Tier({ id, label, color, characters }: TierProperties)
 
     const {active, over} = useDndContext();
     const [validOver, setValidOver] = useState(false)
+    const [isEditing, setEditing] = useState(false)
     const draggedCharacter = active?.data?.current?.character as CharacterProperties
     const isDraggingFromHere = draggedCharacter && draggedCharacter.tierId == id
+
+    // Retrieve Tier updates methods from Context
+    const context = useContext(TierContext)
+    if (!context) throw new Error("Tier must be used inside TierContext.Provider")
+    const { updateTier, insertTier, deleteTier, moveTier } = context
 
     // Make sure over is undefined only if dropping on undroppable container
     useEffect(() => {
@@ -60,8 +72,24 @@ function Tier({ id, label, color, characters }: TierProperties)
 
     return (
         <div className="tier">
-            <div className = "tierName" style = {{ backgroundColor: color }}>
-                {label}
+
+            {/* Left section : editable label */}
+            <div className="tierName" style = {{ backgroundColor: color }}
+                onClick = {() => setEditing(true)}
+            >
+                {isEditing ? (
+                    <textarea value = {label}
+                        autoFocus
+                        onBlur = {() => setEditing(false)}
+                        onChange = {e => updateTier(id, {label: e.target.value})}
+                        onFocus = {e => {
+                            const length = e.target.value.length;
+                            e.target.setSelectionRange(length, length);
+                        }}
+                    />
+                ) : (
+                    label
+                )}
             </div>
 
             {/* Display all characters in the tier */}
@@ -94,6 +122,39 @@ function Tier({ id, label, color, characters }: TierProperties)
                     }
                 </SortableContext>
             </div> 
+
+            {/* Right section : tier controls */}
+            <div className = "tierControls">
+                <div className = "controlTop">
+
+                    {/* Top left : Color picker */}
+                    <div className = "colorSection">
+                        <ColorPicker currentColor = {color}
+                            onChange = {(newColor) => updateTier(id, {color: newColor})}
+                        />
+                    </div>
+
+                    {/* Top right : Up/Down arrows */}
+                    <div className = "controlArrows">
+                        <button className = "tierButton" onClick={() => moveTier(id, UPWARDS)}>
+                            <UpwardsIcon />
+                        </button>
+                        <button className = "tierButton" onClick={() => moveTier(id, DOWNWARDS)}>
+                            <DownwardsIcon />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Lower half – Add/Delete */}
+                <div className="controlActions">
+                    <button className = "tierButton wideButtons" onClick={() => insertTier(id)}>
+                        <AddIcon />
+                    </button>
+                    <button className = "tierButton wideButtons" onClick={() => deleteTier(id)}>
+                        <DeleteIcon />
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }
