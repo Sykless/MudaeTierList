@@ -8,11 +8,12 @@ import { Fragment, useEffect, useRef, useState, type RefObject } from "react"
 
 type PoolProperties = {
     characters: CharacterProperties[]
+    numberOfCharacters: number
     poolContentRef: RefObject<HTMLDivElement | null>
 }
 
 // Pool of characters to sort
-function Pool({ characters, poolContentRef }: PoolProperties)
+function Pool({ characters, numberOfCharacters, poolContentRef }: PoolProperties)
 {
     // Make Pool droppable 
     const {isOver, setNodeRef} = useDroppable({
@@ -22,6 +23,9 @@ function Pool({ characters, poolContentRef }: PoolProperties)
             pool: {characters, poolContentRef} as PoolProperties
         }
     })
+
+    // Searchbar value
+    const [searchText, setSearchText] = useState("");
 
     // Dragged character data
     const {active, over} = useDndContext();
@@ -136,7 +140,7 @@ function Pool({ characters, poolContentRef }: PoolProperties)
                 marginBottom: isSticky ? "" : 40,
             }}>
 
-            {/* Header : TODO display header differently if not sticky */}
+            {/* Pool header with search bar and draggable handle to resize */}
             <div style = {{height: POOL_HEADER_HEIGHT}}>
                 <div className = "resizeHandle" onMouseDown = {resizePool} style = {{
                     cursor: isSticky ? "ns-resize" : "default",
@@ -144,7 +148,10 @@ function Pool({ characters, poolContentRef }: PoolProperties)
                 }} />
 
                 <div className = "poolHeader">
-                    {/* <input placeholder="Search..." /> <span>34 remaining</span> */}
+                    <input id = "poolSearchbar" className = "poolSearchbar" placeholder = "Recherche..." 
+                        value = {searchText} onChange={(e) => setSearchText(e.target.value)}/>
+                    <span className = "regularText">
+                        {characters.length} / {numberOfCharacters}</span>
                 </div>
             </div>
 
@@ -168,6 +175,7 @@ function Pool({ characters, poolContentRef }: PoolProperties)
                                 name = {character.name}
                                 image = {character.image}
                                 tierId = {character.tierId}
+                                opacity = {character.name.toLowerCase().includes(searchText.toLowerCase()) ? 1 : 0.2}
                             />
                         </Fragment>
                     ))}

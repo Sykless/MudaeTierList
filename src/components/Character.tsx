@@ -6,9 +6,10 @@ export type CharacterProperties = {
     name: string
     image: string
     tierId: number
+    opacity?: number
 }
 
-function Character({ name, image, tierId }: CharacterProperties)
+function Character({ name, image, tierId, opacity }: CharacterProperties)
 {
     // Make Character sortable
     const {attributes, isDragging, listeners, setNodeRef, transform, transition} = useSortable({
@@ -23,7 +24,10 @@ function Character({ name, image, tierId }: CharacterProperties)
     // Hide original character when dragged
     const style = isDragging
         ? {opacity: 0}
-        : {transform: CSS.Translate.toString(transform), transition} 
+        : {
+            transform: CSS.Translate.toString(transform),
+            opacity: opacity,
+            transition} 
 
     return (
         <img id = {name}

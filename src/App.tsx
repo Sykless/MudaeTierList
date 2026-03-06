@@ -320,7 +320,9 @@ function App()
             <TierContext.Provider value = {{ updateTier, insertTier, deleteTier, moveTier }}>
                 <Tierlist tiers = {tiers} />
             </TierContext.Provider>
-            <Pool characters = {pool} poolContentRef = {poolContentRef} />
+            <Pool characters = {pool} poolContentRef = {poolContentRef} numberOfCharacters = {
+                tiers.reduce((sum, tier) => sum + tier.characters.length, 0) + pool.length
+            } />
         </DndContext>
     )
 }
