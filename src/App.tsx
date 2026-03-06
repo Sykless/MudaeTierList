@@ -28,8 +28,13 @@ function App()
             characters: [] as CharacterProperties[]
         }))},
         (initial) => {
-            const saved = localStorage.getItem(TIERLIST_STATE);
-            return saved ? JSON.parse(saved) : initial;
+            try {
+                const saved = localStorage.getItem(TIERLIST_STATE);
+                return saved ? JSON.parse(saved) : initial;
+            }
+            catch {
+                return initial;
+            }
         }
     );
 
