@@ -2,18 +2,9 @@ import { CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL_HEADER_HEIGHT } from ".
 import { useEffect, useRef, useState } from "react"
 import Import from "./Import"
 import Export from "./Export"
-import type { CharacterProperties } from "./Character"
-import type { TierProperties } from "./Tier"
-
-type PanelProperties = {
-    tiers: TierProperties[]
-    pool: CharacterProperties[]
-    mudaeImport: (characters: CharacterProperties[]) => void
-    backupImport: (tiers: TierProperties[], pool: CharacterProperties[]) => void
-}
 
 // Import/Export Panel
-function Panel({tiers, pool, mudaeImport, backupImport}: PanelProperties)
+function Panel()
 {
     // Keep track of open/closed state
     const [isOpen, setOpen] = useState(false)
@@ -42,8 +33,8 @@ function Panel({tiers, pool, mudaeImport, backupImport}: PanelProperties)
                 overflow: animate ? "visible" : "hidden"
             }}>
                 <div className = "panelGrid">
-                    <Import mudaeImport = {mudaeImport} backupImport = {backupImport} triggerAnimation = {triggerAnimation} animate = {animate} />
-                    <Export tiers = {tiers} pool = {pool} animate = {animate} />
+                    <Import animate = {animate} triggerAnimation = {triggerAnimation} />
+                    <Export animate = {animate} />
                 </div>
             </div>
 

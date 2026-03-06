@@ -6,21 +6,23 @@ import { CheckmarkIcon } from "../svg/CheckmarkIcon"
 import { CopyIcon } from "../svg/CopyIcon"
 import { appendJsonToPng, captureTierlist, downloadFile } from "../utils/PngJson"
 import { EXPORT_HELPER } from "../utils/Shared"
+import { TierlistContext, type TierlistContextType } from "../utils/Context"
+
 import Helper from "./Helper"
-import type { CharacterProperties } from "./Character"
-import type { TierProperties } from "./Tier"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import toast from "react-hot-toast"
 
 type ExportProperties = {
-    tiers: TierProperties[]
-    pool: CharacterProperties[]
     animate: boolean;
 }
 
 // Export tierlist to Mudae, an image or a json backup file
-function Export({tiers, pool, animate}: ExportProperties)
+function Export({animate}: ExportProperties)
 {
+    // Retrieve Tierlist state from Context
+    const {tierlist} = useContext(TierlistContext) as TierlistContextType
+
+    // Default state : empty export box
     const [exportText, setExportText] = useState("")
     const [copied, setCopied] = useState(false)
 
@@ -44,8 +46,8 @@ function Export({tiers, pool, animate}: ExportProperties)
             app: "Mudae Tierlist",
             version: 1,
             createdAt: new Date().toISOString(),
-            tiers: tiers,
-            pool: pool
+            tiers: tierlist.tiers,
+            pool: tierlist.pool
         }
 
         return JSON.stringify(saveFile, null, 2);
@@ -78,14 +80,14 @@ function Export({tiers, pool, animate}: ExportProperties)
         let mudaeCommand = "$sortmarry "
 
         // Add each character in order to the command
-        tiers.forEach(tier => {
+        tierlist.tiers.forEach(tier => {
             tier.characters.forEach(character => {
                 mudaeCommand += character.name + " $ "
             })
         })
 
         // Add pool characters at the bottom of the command
-        pool.forEach(character => {
+        tierlist.pool.forEach(character => {
             mudaeCommand += character.name + " $ "
         })
 
@@ -108,7 +110,7 @@ function Export({tiers, pool, animate}: ExportProperties)
                 </div>
 
                 <button className = "primaryButton" onClick = {exportMudae}
-                    disabled = {!tiers.some(tier => tier.characters.length) && !pool.length}>
+                    disabled = {!tierlist.tiers.some(tier => tier.characters.length) && !tierlist.pool.length}>
                     Export
                 </button>
 

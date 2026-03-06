@@ -1,17 +1,6 @@
 
 import { type Collision, type Over } from "@dnd-kit/core"
 import type { CharacterProperties } from "../components/Character"
-import { createContext } from "react";
-
-export type TierContextType = {
-    updateTier: (tierId: number, attributes: {label? : string; color?: string}) => void,
-    insertTier: (tierId: number) => void,
-    deleteTier: (tierId: number) => void,
-    moveTier: (tierId: number, direction: number) => void
-}
-
-// Create Tier context to let tiers sub-functions perform updates anywhere
-export const TierContext = createContext<TierContextType | null>(null)
 
 export const CHARACTERS_PER_LINE_TIER = 15
 export const CHARACTERS_PER_LINE_POOL = 20
@@ -47,11 +36,6 @@ export const TIER_COLORS = [
 
 export function proxifyImageUrl(originalUrl: string) {
     return "https://super-field-ca48.rakouett-du-56.workers.dev/?url=" + originalUrl;
-}
-
-export function findDroppable(collisionList: Collision[], droppableType: string) {
-    return collisionList.filter(droppable => 
-            droppable.data?.droppableContainer?.data.current.type == droppableType)
 }
 
 export function findCharacterIndex(characterList: CharacterProperties[], characterName: string) {

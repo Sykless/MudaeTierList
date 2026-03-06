@@ -2,18 +2,18 @@ import type { CharacterProperties } from "./Character"
 import Character from "./Character"
 import PreviewTierCharacter from "../preview/PreviewTierCharacter"
 import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_HEADER_HEIGHT, POOL_ID } from "../utils/Shared"
+import { TierlistContext, type TierlistContextType } from "../utils/Context"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { rectSortingStrategy , SortableContext } from "@dnd-kit/sortable"
-import { Fragment, useEffect, useRef, useState, type RefObject } from "react"
+import { Fragment, useContext, useEffect, useRef, useState, type RefObject } from "react"
 
 type PoolProperties = {
     characters: CharacterProperties[]
-    numberOfCharacters: number
     poolContentRef: RefObject<HTMLDivElement | null>
 }
 
 // Pool of characters to sort
-function Pool({ characters, numberOfCharacters, poolContentRef }: PoolProperties)
+function Pool({poolContentRef, characters}: PoolProperties)
 {
     // Make Pool droppable 
     const {isOver, setNodeRef} = useDroppable({
@@ -23,6 +23,9 @@ function Pool({ characters, numberOfCharacters, poolContentRef }: PoolProperties
             pool: {characters, poolContentRef} as PoolProperties
         }
     })
+
+    // Retrieve Tierlist state from Context
+    const {tierlist} = useContext(TierlistContext) as TierlistContextType
 
     // Searchbar value
     const [searchText, setSearchText] = useState("");
@@ -151,7 +154,8 @@ function Pool({ characters, numberOfCharacters, poolContentRef }: PoolProperties
                     <input id = "poolSearchbar" className = "poolSearchbar" placeholder = "Recherche..." 
                         value = {searchText} onChange={(e) => setSearchText(e.target.value)}/>
                     <span className = "regularText">
-                        {characters.length} / {numberOfCharacters}</span>
+                        {characters.length} / {tierlist.tiers.reduce((sum, tier) => sum + tier.characters.length, 0) + characters.length}
+                    </span>
                 </div>
             </div>
 

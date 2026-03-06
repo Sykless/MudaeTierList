@@ -3,6 +3,12 @@ import { useDndContext, type Active, type Collision, type DroppableContainer } f
 import { useEffect } from "react"
 import { TIER } from "./Shared"
 
+// Find all droppables with provided droppable type
+export function findDroppable(collisionList: Collision[], droppableType: string) {
+    return collisionList.filter(droppable => 
+            droppable.data?.droppableContainer?.data.current.type == droppableType)
+}
+
 // Override default behavior when dropping character in tier, simulate swap with last character in tier
 export function simulateCharacterSwap(droppableContainer: Collision[], args: {droppableContainers: DroppableContainer[], active: Active}) {
     const originTierId = args.active.data.current?.character?.tierId

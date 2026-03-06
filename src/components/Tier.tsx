@@ -5,7 +5,9 @@ import { UpwardsIcon } from "../svg/UpwardsIcon"
 import { DownwardsIcon } from "../svg/DownwardsIcon"
 import { AddIcon } from "../svg/AddIcon"
 import { DeleteIcon } from "../svg/DeleteIcon"
-import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER, TIER, TierContext, UPWARDS, DOWNWARDS } from "../utils/Shared"
+import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER, TIER, UPWARDS, DOWNWARDS } from "../utils/Shared"
+import { TierlistContext, TIER_UPDATE_ATTRIBUTES, TIER_INSERT, TIER_DELETE, TIER_MOVE, type TierlistContextType } from "../utils/Context"
+
 import type { CharacterProperties } from "./Character"
 
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
@@ -32,16 +34,14 @@ function Tier({ id, label, color, characters }: TierProperties)
         },
     })
 
+    // Retrieve Tierlist state from Context
+    const {dispatch} = useContext(TierlistContext) as TierlistContextType
+
     const {active, over} = useDndContext();
     const [validOver, setValidOver] = useState(false)
     const [isEditing, setEditing] = useState(false)
     const draggedCharacter = active?.data?.current?.character as CharacterProperties
     const isDraggingFromHere = draggedCharacter && draggedCharacter.tierId == id
-
-    // Retrieve Tier updates methods from Context
-    const context = useContext(TierContext)
-    if (!context) throw new Error("Tier must be used inside TierContext.Provider")
-    const { updateTier, insertTier, deleteTier, moveTier } = context
 
     // Make sure over is undefined only if dropping on undroppable container
     useEffect(() => {
@@ -71,17 +71,21 @@ function Tier({ id, label, color, characters }: TierProperties)
     }
 
     return (
-        <div className="tier">
+        <div className = "tier">
 
             {/* Left section : editable label */}
-            <div className="tierName" style = {{ backgroundColor: color }}
+            <div className = "tierName" style = {{ backgroundColor: color }}
                 onClick = {() => setEditing(true)}
             >
                 {isEditing ? (
                     <textarea value = {label}
                         autoFocus
                         onBlur = {() => setEditing(false)}
-                        onChange = {e => updateTier(id, {label: e.target.value})}
+                        onChange = {e => dispatch({
+                            type: TIER_UPDATE_ATTRIBUTES,
+                            tierId: id,
+                            attributes: {label: e.target.value}
+                        })}
                         onFocus = {e => {
                             const length = e.target.value.length;
                             e.target.setSelectionRange(length, length);
@@ -130,16 +134,28 @@ function Tier({ id, label, color, characters }: TierProperties)
                     {/* Top left : Color picker */}
                     <div className = "colorSection">
                         <ColorPicker currentColor = {color}
-                            onChange = {(newColor) => updateTier(id, {color: newColor})}
+                            onChange = {(newColor) => dispatch({
+                                type: TIER_UPDATE_ATTRIBUTES,
+                                tierId: id,
+                                attributes: {color: newColor}
+                            })}
                         />
                     </div>
 
                     {/* Top right : Up/Down arrows */}
                     <div className = "controlArrows">
-                        <button className = "tierButton" onClick={() => moveTier(id, UPWARDS)}>
+                        <button className = "tierButton" onClick = {() => dispatch({
+                            type: TIER_MOVE,
+                            tierId: id,
+                            direction: UPWARDS
+                        })}>
                             <UpwardsIcon />
                         </button>
-                        <button className = "tierButton" onClick={() => moveTier(id, DOWNWARDS)}>
+                        <button className = "tierButton" onClick = {() => dispatch({
+                            type: TIER_MOVE,
+                            tierId: id,
+                            direction: DOWNWARDS
+                        })}>
                             <DownwardsIcon />
                         </button>
                     </div>
@@ -147,10 +163,16 @@ function Tier({ id, label, color, characters }: TierProperties)
 
                 {/* Lower half – Add/Delete */}
                 <div className="controlActions">
-                    <button className = "tierButton wideButtons" onClick={() => insertTier(id)}>
+                    <button className = "tierButton wideButtons" onClick = {() => dispatch({
+                        type: TIER_INSERT,
+                        tierId: id
+                    })}>
                         <AddIcon />
                     </button>
-                    <button className = "tierButton wideButtons" onClick={() => deleteTier(id)}>
+                    <button className = "tierButton wideButtons" onClick = {() => dispatch({
+                        type: TIER_DELETE,
+                        tierId: id
+                    })}>
                         <DeleteIcon />
                     </button>
                 </div>
