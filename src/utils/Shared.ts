@@ -1,5 +1,5 @@
 
-import { type Collision, type Over } from "@dnd-kit/core"
+import { type Over } from "@dnd-kit/core"
 import type { CharacterProperties } from "../components/Character"
 
 export const CHARACTERS_PER_LINE_TIER = 15
@@ -8,6 +8,7 @@ export const CHARACTER_HEIGHT = 112
 export const CHARACTER_WIDTH = 72
 export const POOL_HEADER_HEIGHT = 32
 
+export const TIERLIST_STATE = "TIERLIST_STATE"
 export const IMPORT_HELPER = "IMPORT_HELPER"
 export const EXPORT_HELPER = "EXPORT_HELPER"
 export const POOL_ID = -1

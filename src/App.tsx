@@ -7,18 +7,18 @@ import Panel from "./components/Panel"
 import Tierlist from "./components/Tierlist"
 import PreviewDragCharacter from "./preview/PreviewDragCharacter"
 import PreviewSwapCharacter from "./preview/PreviewSwapCharacter"
-import { CHARACTER, TIER, POOL, POOL_ID, TIER_COLORS } from "./utils/Shared"
+import { CHARACTER, TIER, POOL, POOL_ID, TIER_COLORS, TIERLIST_STATE } from "./utils/Shared"
 import { TierlistContext, TIER_UPDATE_ATTRIBUTES, TIER_INSERT, TIER_DELETE, TIER_MOVE, type TierlistAction, type TierlistProperties, IMPORT_MUDAE, IMPORT_BACKUP, DRAG_CHARACTER } from "./utils/Context"
 import { findDroppable, isInRect, ScrollRemeasurer, simulateCharacterSwap } from "./utils/Droppable"
 
-import { useReducer, useRef } from "react"
+import { useEffect, useReducer, useRef } from "react"
 import { DndContext, pointerWithin } from "@dnd-kit/core"
 import type { DragEndEvent } from "@dnd-kit/core"
 import { Toaster } from "react-hot-toast";
 
 function App()
 {
-    // Default state : empty pool, 10 empty tiers
+    // Default state : empty pool and 10 empty tiers, or saved data if present
     const [tierlist, dispatch] = useReducer(tierlistReducer, {
         pool: [],
         tiers: ["S","A","B","C","D","E","F","G","H","I"].map((label, index) => ({
@@ -26,8 +26,12 @@ function App()
             label: label,
             color: TIER_COLORS[index],
             characters: [] as CharacterProperties[]
-        }))
-    });
+        }))},
+        (initial) => {
+            const saved = localStorage.getItem(TIERLIST_STATE);
+            return saved ? JSON.parse(saved) : initial;
+        }
+    );
 
     // Reducer : apply tierlist state update logic depending on provided action
     function tierlistReducer(state: TierlistProperties, action: TierlistAction): TierlistProperties {
@@ -58,6 +62,11 @@ function App()
                 return state;
         }
     }
+
+    // Save Tierlist in localStorage after any modification
+    useEffect(() => {
+        localStorage.setItem(TIERLIST_STATE, JSON.stringify(tierlist))
+    }, [tierlist])
     
     // Called after a character is dropped
     function handleDragEnd(event: DragEndEvent) {
