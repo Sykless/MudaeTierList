@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import { IMPORT_HELPER, EXPORT_HELPER } from "../utils/Shared";
 
 const HELPER_WIDTH = 660
-const IMPORT_HELPER_SCREENSHOT_PATH = "../../img/mudae-import.png"
-const EXPORT_HELPER_SCREENSHOT_PATH = "../../img/mudae-export.png"
+const IMPORT_HELPER_SCREENSHOT_PATH = "mudae-import.png"
+const EXPORT_HELPER_SCREENSHOT_PATH = "mudae-export.png"
 
 type HelperProperties = {
     helperType: string
