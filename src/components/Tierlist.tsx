@@ -11,8 +11,8 @@ function Tierlist()
 
     // Use Flipper to auto-animate tier add/remove/swap
     return (
-        <Flipper className = "tierlist" flipKey = {tierlist.tiers.map(tier => tier.id).join()}>
-            {tierlist.tiers.map((tier) => (
+        <Flipper className = "tierlist" flipKey = {tierlist.present.tiers.map(tier => tier.id).join()}>
+            {tierlist.present.tiers.map((tier) => (
                 <Flipped key = {tier.id} flipId = {tier.id}>
                     <div>
                         <Tier key = {tier.id}

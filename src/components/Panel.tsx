@@ -1,11 +1,19 @@
 import { CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL_HEADER_HEIGHT } from "../utils/Shared"
-import { useEffect, useRef, useState } from "react"
+import { HISTORY_REDO, HISTORY_UNDO, TierlistContext, WIPE_DATA, type TierlistContextType } from "../utils/Context"
+import { useContext, useEffect, useRef, useState } from "react"
 import Import from "./Import"
 import Export from "./Export"
+import { UndoIcon } from "../svg/UndoIcon"
+import { RedoIcon } from "../svg/RedoIcon"
+import { TrashIcon } from "../svg/TrashIcon"
+
 
 // Import/Export Panel
 function Panel()
 {
+    // Retrieve Tierlist state from Context
+    const {tierlist, dispatch} = useContext(TierlistContext) as TierlistContextType
+
     // Keep track of open/closed state
     const [isOpen, setOpen] = useState(false)
     const [panelHeight, setPanelHeight] = useState(0)
@@ -38,8 +46,33 @@ function Panel()
                 </div>
             </div>
 
-            <button className = "closeHandle" style = {{height: POOL_HEADER_HEIGHT}}
-                 onClick={() => setOpen(!isOpen)} />
+            <div
+                className = "closeHandle"
+                style={{ height: POOL_HEADER_HEIGHT }}
+                >
+                <div className = "footerIcons">
+                    <button className = "iconButton"
+                            onClick = {() => dispatch({type: HISTORY_UNDO})}
+                            disabled = {tierlist.past.length == 0}>
+                        <UndoIcon />
+                    </button>
+
+                    <button className = "iconButton"
+                            onClick = {() => dispatch({type: HISTORY_REDO})}
+                            disabled = {tierlist.future.length == 0}>
+                        <RedoIcon />
+                    </button>
+
+                    <button className = "iconButton danger" onClick = {() => dispatch({type: WIPE_DATA})}>
+                        <TrashIcon />
+                    </button>
+                </div>
+
+                <button
+                    className="togglePool"
+                    onClick={() => setOpen(!isOpen)}
+                />
+                </div>
         </div>
     )
 }

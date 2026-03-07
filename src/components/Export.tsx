@@ -46,8 +46,8 @@ function Export({animate}: ExportProperties)
             app: "Mudae Tierlist",
             version: 1,
             createdAt: new Date().toISOString(),
-            tiers: tierlist.tiers,
-            pool: tierlist.pool
+            tiers: tierlist.present.tiers,
+            pool: tierlist.present.pool
         }
 
         return JSON.stringify(saveFile, null, 2);
@@ -80,14 +80,14 @@ function Export({animate}: ExportProperties)
         let mudaeCommand = "$sortmarry "
 
         // Add each character in order to the command
-        tierlist.tiers.forEach(tier => {
+        tierlist.present.tiers.forEach(tier => {
             tier.characters.forEach(character => {
                 mudaeCommand += character.name + " $ "
             })
         })
 
         // Add pool characters at the bottom of the command
-        tierlist.pool.forEach(character => {
+        tierlist.present.pool.forEach(character => {
             mudaeCommand += character.name + " $ "
         })
 
@@ -110,7 +110,7 @@ function Export({animate}: ExportProperties)
                 </div>
 
                 <button className = "primaryButton" onClick = {exportMudae}
-                    disabled = {!tierlist.tiers.some(tier => tier.characters.length) && !tierlist.pool.length}>
+                    disabled = {!tierlist.present.tiers.some(tier => tier.characters.length) && !tierlist.present.pool.length}>
                     Export
                 </button>
 

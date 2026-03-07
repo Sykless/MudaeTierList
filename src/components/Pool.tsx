@@ -154,7 +154,7 @@ function Pool({poolContentRef, characters}: PoolProperties)
                     <input id = "poolSearchbar" className = "poolSearchbar" placeholder = "Recherche..." 
                         value = {searchText} onChange={(e) => setSearchText(e.target.value)}/>
                     <span className = "regularText">
-                        {characters.length} / {tierlist.tiers.reduce((sum, tier) => sum + tier.characters.length, 0) + characters.length}
+                        {characters.length} / {tierlist.present.tiers.reduce((sum, tier) => sum + tier.characters.length, 0) + characters.length}
                     </span>
                 </div>
             </div>
