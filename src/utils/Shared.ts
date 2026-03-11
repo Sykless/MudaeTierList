@@ -36,7 +36,7 @@ export const TIER_COLORS = [
 ]
 
 export function sanitizeName(name: string) {
-    name.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    return name.replace(/[^a-z0-9]/gi, '').toLowerCase();
 }
 
 export function proxifyImageUrl(originalUrl: string) {
