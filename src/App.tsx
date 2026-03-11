@@ -13,7 +13,7 @@ import { TierlistContext, TIER_UPDATE_ATTRIBUTES, TIER_INSERT, TIER_DELETE, TIER
 import { findDroppable, isInRect, ScrollRemeasurer, simulateCharacterSwap } from "./utils/Droppable"
 
 import { useEffect, useReducer, useRef, useState } from "react"
-import { DndContext, pointerWithin } from "@dnd-kit/core"
+import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from "@dnd-kit/core"
 import type { DragEndEvent } from "@dnd-kit/core"
 import { Toaster } from "react-hot-toast";
 import { ImageEditContext } from "./context/ImageEditContext"
@@ -133,6 +133,8 @@ function App()
         <DndContext
             autoScroll = {false}
             onDragEnd = {handleDragEnd}
+            sensors = {useSensors(useSensor(PointerSensor, {
+                activationConstraint: {distance: 8}}))}
             collisionDetection = {(args) => {
                 const { pointerCoordinates } = args;
                 const collisions = pointerWithin(args) 

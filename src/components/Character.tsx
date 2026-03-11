@@ -43,7 +43,7 @@ function Character({ name, image, tierId, opacity }: CharacterProperties)
                 style = {style} width = {CHARACTER_WIDTH} height = {CHARACTER_HEIGHT}
                 src = {image} title = {name} alt = {name}
                 onClick = {handleClick}
-                {...(!imageEditMode ? listeners : {})}
+                {...listeners}
                 {...attributes}
             />
 
