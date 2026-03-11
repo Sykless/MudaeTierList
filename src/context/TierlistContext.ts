@@ -13,6 +13,7 @@ export const IMPORT_MUDAE = "IMPORT_MUDAE"
 export const IMPORT_BACKUP = "IMPORT_BACKUP"
 export const HISTORY_UNDO = "HISTORY_UNDO";
 export const HISTORY_REDO = "HISTORY_REDO";
+export const UPDATE_CHARACTER_IMAGE = "UPDATE_CHARACTER_IMAGE"
 export const WIPE_DATA = "WIPE_DATA"
 
 export type TierlistProperties = {
@@ -34,6 +35,7 @@ export type TierlistAction =
     | { type: typeof TIER_MOVE; tierId: number, direction: number }
     | { type: typeof IMPORT_MUDAE; importedCharacters: CharacterProperties[]}
     | { type: typeof IMPORT_BACKUP; pool: CharacterProperties[], tiers: TierProperties[]}
+    | { type: typeof UPDATE_CHARACTER_IMAGE; characterName: string, image: string}
     | { type: typeof WIPE_DATA}
 
 export type HistoryAction =

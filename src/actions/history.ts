@@ -1,4 +1,4 @@
-import type { TierlistHistoryProperties } from "../utils/Context";
+import type { TierlistHistoryProperties } from "../context/TierlistContext";
 
 export function undo(tierlist: TierlistHistoryProperties): TierlistHistoryProperties {
     if (tierlist.past.length === 0)

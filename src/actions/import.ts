@@ -1,5 +1,5 @@
 import type { CharacterProperties } from "../components/Character"
-import type { TierlistProperties } from "../utils/Context"
+import type { TierlistProperties } from "../context/TierlistContext"
 
 // Character import feature
 export function importMudaeCharacters(tierlist: TierlistProperties, importedCharacters: CharacterProperties[]): TierlistProperties

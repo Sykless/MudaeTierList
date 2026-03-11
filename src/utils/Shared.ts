@@ -35,9 +35,17 @@ export const TIER_COLORS = [
     "#4a4a4a"  // Dark Grey
 ]
 
+export function sanitizeName(name: string) {
+    name.replace(/[^a-z0-9]/gi, '').toLowerCase();
+}
+
 export function proxifyImageUrl(originalUrl: string) {
     return "https://super-field-ca48.rakouett-du-56.workers.dev/?url=" + originalUrl;
 }
+
+export function proxifyCharacterUrl(originalUrl: string) {
+    return "https://young-cherry-e541.rakouett-du-56.workers.dev/?url=" + encodeURIComponent(originalUrl);
+} 
 
 export function findCharacterIndex(characterList: CharacterProperties[], characterName: string) {
     return characterList.findIndex(character => character.name === characterName)

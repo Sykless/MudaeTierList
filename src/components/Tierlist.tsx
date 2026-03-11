@@ -1,5 +1,5 @@
 import Tier from "./Tier";
-import { TierlistContext, type TierlistContextType } from "../utils/Context";
+import { TierlistContext, type TierlistContextType } from "../context/TierlistContext";
 import { useContext } from "react";
 import { Flipped, Flipper } from "react-flip-toolkit";
 

@@ -9,13 +9,15 @@ import Tierlist from "./components/Tierlist"
 import PreviewDragCharacter from "./preview/PreviewDragCharacter"
 import PreviewSwapCharacter from "./preview/PreviewSwapCharacter"
 import { CHARACTER, TIER, POOL, POOL_ID, TIER_COLORS, TIERLIST_STATE } from "./utils/Shared"
-import { TierlistContext, TIER_UPDATE_ATTRIBUTES, TIER_INSERT, TIER_DELETE, TIER_MOVE, type TierlistAction, type TierlistProperties, IMPORT_MUDAE, IMPORT_BACKUP, DRAG_CHARACTER, type TierlistHistoryProperties, type HistoryAction, HISTORY_REDO, HISTORY_UNDO, WIPE_DATA } from "./utils/Context"
+import { TierlistContext, TIER_UPDATE_ATTRIBUTES, TIER_INSERT, TIER_DELETE, TIER_MOVE, type TierlistAction, type TierlistProperties, IMPORT_MUDAE, IMPORT_BACKUP, DRAG_CHARACTER, type TierlistHistoryProperties, type HistoryAction, HISTORY_REDO, HISTORY_UNDO, WIPE_DATA, UPDATE_CHARACTER_IMAGE } from "./context/TierlistContext"
 import { findDroppable, isInRect, ScrollRemeasurer, simulateCharacterSwap } from "./utils/Droppable"
 
-import { useEffect, useReducer, useRef } from "react"
+import { useEffect, useReducer, useRef, useState } from "react"
 import { DndContext, pointerWithin } from "@dnd-kit/core"
 import type { DragEndEvent } from "@dnd-kit/core"
 import { Toaster } from "react-hot-toast";
+import { ImageEditContext } from "./context/ImageEditContext"
+import { updateCharacterImage } from "./actions/character"
 
 // Default state : empty pool and 10 empty tiers
 const INITIAL_TIERLIST: TierlistProperties = {
@@ -43,6 +45,10 @@ function App()
             return {past: [], present: INITIAL_TIERLIST, future: []};
         }
     });
+
+    // Image Edit Mode 
+    const [imageEditMode, setImageEditMode] = useState(false)
+    function toggleImageEditMode() {setImageEditMode(prev => !prev)}
 
     // History reducer : undo/redo action or perform regular tierlist update
     function historyReducer(state: TierlistHistoryProperties, action: HistoryAction): TierlistHistoryProperties {
@@ -96,10 +102,13 @@ function App()
                 return importMudaeCharacters(state, action.importedCharacters);
 
             case IMPORT_BACKUP:
-                return {pool: action.pool, tiers: action.tiers}
+                return {pool: action.pool, tiers: action.tiers};
+
+            case UPDATE_CHARACTER_IMAGE:
+                return updateCharacterImage(state, action.characterName, action.image);
 
             case WIPE_DATA:
-                return INITIAL_TIERLIST
+                return INITIAL_TIERLIST;
 
             default:
                 return state;
@@ -157,11 +166,13 @@ function App()
             }}} />
 
             {/* Displayed components */}
-            <TierlistContext.Provider value = {{tierlist, dispatch}}>
-                <Panel />
-                <Tierlist />
-                <Pool characters = {tierlist.present.pool} poolContentRef = {poolContentRef} />
-            </TierlistContext.Provider>
+            <ImageEditContext.Provider value = {{imageEditMode, toggleImageEditMode}}>
+                <TierlistContext.Provider value = {{tierlist, dispatch}}>
+                    <Panel />
+                    <Tierlist />
+                    <Pool characters = {tierlist.present.pool} poolContentRef = {poolContentRef} />
+                </TierlistContext.Provider>
+            </ImageEditContext.Provider>
         </DndContext>
     )
 }

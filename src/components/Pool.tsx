@@ -2,7 +2,7 @@ import type { CharacterProperties } from "./Character"
 import Character from "./Character"
 import PreviewTierCharacter from "../preview/PreviewTierCharacter"
 import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_POOL, POOL, POOL_HEADER_HEIGHT, POOL_ID } from "../utils/Shared"
-import { TierlistContext, type TierlistContextType } from "../utils/Context"
+import { TierlistContext, type TierlistContextType } from "../context/TierlistContext"
 import { useDndContext, useDroppable } from "@dnd-kit/core"
 import { rectSortingStrategy , SortableContext } from "@dnd-kit/sortable"
 import { Fragment, useContext, useEffect, useRef, useState, type RefObject } from "react"
@@ -134,7 +134,7 @@ function Pool({poolContentRef, characters}: PoolProperties)
 
     return (
         <div ref = {setNodeRef} className = "characterPool"
-            style = {{zIndex: 999,
+            style = {{zIndex: 99,
                 maxWidth: CHARACTERS_PER_LINE_POOL * CHARACTER_WIDTH,
                 minHeight: isSticky ? "" : poolHeight,
                 height: isSticky ? poolHeight : "", 
@@ -179,7 +179,7 @@ function Pool({poolContentRef, characters}: PoolProperties)
                                 name = {character.name}
                                 image = {character.image}
                                 tierId = {character.tierId}
-                                opacity = {character.name.toLowerCase().includes(searchText.toLowerCase()) ? 1 : 0.2}
+                                opacity = {character.name.toLowerCase().includes(searchText.toLowerCase()) ? undefined : 0.2}
                             />
                         </Fragment>
                     ))}

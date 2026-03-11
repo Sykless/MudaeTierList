@@ -1,6 +1,9 @@
 import { CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH } from "../utils/Shared"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+import { useContext, useState } from "react"
+import { ImageEditContext, type ImageEditContextType } from "../context/ImageEditContext"
+import ImagePicker from "./ImagePicker"
 
 export type CharacterProperties = {
     name: string
@@ -21,27 +24,35 @@ function Character({ name, image, tierId, opacity }: CharacterProperties)
         animateLayoutChanges: () => false // Only leave default swap animations
     })
 
+    // Retrieve Image Edit Mode from Context
+    const {imageEditMode} = useContext(ImageEditContext) as ImageEditContextType
+
     // Hide original character when dragged
-    const style = isDragging
-        ? {opacity: 0}
-        : {
+    const style = isDragging ? {opacity: 0}
+        : {opacity: opacity,
             transform: CSS.Translate.toString(transform),
-            opacity: opacity,
-            transition} 
+            transition: imageEditMode ? "opacity 0.25s" : transition} 
+
+
+    const [pickerOpen, setPickerOpen] = useState(false)
+    function handleClick() {if (imageEditMode) setPickerOpen(true)}
 
     return (
-        <img id = {name}
-            ref = {setNodeRef}
-            {...listeners}
-            {...attributes}
-            style = {style}
-            className = "character"
-            src = {image}
-            alt = {name}
-            title = {name}
-            width = {CHARACTER_WIDTH}
-            height = {CHARACTER_HEIGHT}
-        />
+        <>
+            <img id = {name} ref = {setNodeRef} className = {`character ${imageEditMode ? "editMode" : ""}`}
+                style = {style} width = {CHARACTER_WIDTH} height = {CHARACTER_HEIGHT}
+                src = {image} title = {name} alt = {name}
+                onClick = {handleClick}
+                {...(!imageEditMode ? listeners : {})}
+                {...attributes}
+            />
+
+            {pickerOpen &&
+                <ImagePicker name = {name}
+                    onClose = {() => setPickerOpen(false)}
+                />
+            }
+        </>
     )
 }
 

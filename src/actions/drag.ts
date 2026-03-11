@@ -1,5 +1,5 @@
 import { CHARACTER, POOL_ID, findCharacterIndex, getTargetTierId } from "../utils/Shared";
-import type { TierlistProperties } from "../utils/Context"
+import type { TierlistProperties } from "../context/TierlistContext"
 import type { CharacterProperties } from "../components/Character";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { DragEndEvent } from "@dnd-kit/core";

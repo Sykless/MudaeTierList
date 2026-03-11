@@ -6,7 +6,7 @@ import { DownwardsIcon } from "../svg/DownwardsIcon"
 import { AddIcon } from "../svg/AddIcon"
 import { DeleteIcon } from "../svg/DeleteIcon"
 import { getTargetTierId, CHARACTER, CHARACTER_HEIGHT, CHARACTER_WIDTH, CHARACTERS_PER_LINE_TIER, TIER, UPWARDS, DOWNWARDS } from "../utils/Shared"
-import { TierlistContext, TIER_UPDATE_ATTRIBUTES, TIER_INSERT, TIER_DELETE, TIER_MOVE, type TierlistContextType } from "../utils/Context"
+import { TierlistContext, TIER_UPDATE_ATTRIBUTES, TIER_INSERT, TIER_DELETE, TIER_MOVE, type TierlistContextType } from "../context/TierlistContext"
 
 import type { CharacterProperties } from "./Character"
 

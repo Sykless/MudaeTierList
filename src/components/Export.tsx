@@ -6,7 +6,7 @@ import { CheckmarkIcon } from "../svg/CheckmarkIcon"
 import { CopyIcon } from "../svg/CopyIcon"
 import { appendJsonToPng, captureTierlist, downloadFile } from "../utils/PngJson"
 import { EXPORT_HELPER } from "../utils/Shared"
-import { TierlistContext, type TierlistContextType } from "../utils/Context"
+import { TierlistContext, type TierlistContextType } from "../context/TierlistContext"
 
 import Helper from "./Helper"
 import { useContext, useState } from "react"

@@ -1,8 +1,6 @@
-
-
 import { arrayMove } from "@dnd-kit/sortable";
 import { DOWNWARDS, UPWARDS } from "../utils/Shared";
-import type { TierlistProperties } from "../utils/Context"
+import type { TierlistProperties } from "../context/TierlistContext"
 
 export const tier =
 {

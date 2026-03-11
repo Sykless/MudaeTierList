@@ -1,5 +1,5 @@
 import { IMPORT_HELPER, POOL_ID, proxifyImageUrl } from "../utils/Shared"
-import { TierlistContext, IMPORT_MUDAE, IMPORT_BACKUP, type TierlistContextType } from "../utils/Context"
+import { TierlistContext, IMPORT_MUDAE, IMPORT_BACKUP, type TierlistContextType } from "../context/TierlistContext"
 
 import { extractJsonFromPng } from "../utils/PngJson"
 import { DiscordIcon } from "../svg/DiscordIcon"
